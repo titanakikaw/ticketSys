@@ -34,7 +34,7 @@ require('../client/index.php');
     <div class="table-container">
         <div class="table-actions">
             <input type="button" value="Open" onclick="openItem('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="createTicket()">
+            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
             <input type="button" value="Mark As Done">
         </div>
         <div class="table">
@@ -80,12 +80,45 @@ require('../client/index.php');
     <div class="modal-bg">
         <div class="item-modal" id="openItem">
             <div class="itm-modal-header">
-                <h3>Department Information</h3>
+                <h3>Employee Information</h3>
             </div>
             <div class="itm-modal-body">
-                <p>Department Id: <span>0001</span></p>
-                <p>Code: <span>IT-Helpdesk</span></p>
-                <p>Description: <span>Helpdesk</span></p>
+                <div class="" style="display:flex;">
+                    <div class="form-input" style="margin:5px">
+                        <p>Lastname</p>
+                        <input type="text" id="code">
+                    </div>
+                    <div class="form-input" style="margin:5px">
+                        <p>Firstname</p>
+                        <input type="text" id="description">
+                    </div>
+                </div>
+                <div class="" style="display:flex;">
+                    <div class="form-input" style="flex-grow: 1;margin:5px">
+                        <p>Department:</p>
+                        <select style="width: 100%;">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="form-input" style="width: 45%;margin:5px">
+                        <p>Position:</p>
+                        <select style="width: 100%;">
+                            <option></option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="" style="display:flex;">
+                    <div class="form-input" style="width: 45%;margin:5px">
+                        <p>Username:</p>
+                        <input type="text" name="[txt][username]">
+                    </div>
+                    <div class="form-input" style="flex-grow: 1;margin:5px">
+                        <p>Password:</p>
+                        <input type="password" name="[txt][password]">
+                    </div>
+                </div>
+
             </div>
             <div class="itm-modal-action">
                 <input type="button" value="Submit" style="background-color: green;">
@@ -113,6 +146,16 @@ require('../client/index.php');
             $('.modal-bg').css("display", "none")
         })
     })
+
+
+    function save() {
+        var children = $('.form-input').children()
+        children.map((index, child) => {
+            if (child.tagName.toUpperCase() != "P") {
+                child.setAttribute("disabled", "")
+            }
+        })
+    }
 </script>
 
 <?php require('../client/footer.php') ?>

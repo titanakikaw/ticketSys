@@ -77,7 +77,7 @@ function checkSelected(items) {
 }
 
 function openItem(type) {
-    let input_fields = $(".itm-modal-body input")
+    var children = $('.form-input').children()
     if (type === 'existing') {
         let items = document.querySelectorAll('#checkBoxItem');
         let checkedItem = checkSelected(items);
@@ -87,8 +87,10 @@ function openItem(type) {
         } else if (checkedItem.count == 1) {
             $('.modal-bg').css("display", "flex")
             $('.modal-bg').css("opacity", "1")
-            input_fields.map((index) => {
-                input_fields[index].setAttribute('disabled', '');
+            children.map((index, child) => {
+                if (child.tagName.toUpperCase() != "P") {
+                    child.setAttribute("disabled", "")
+                }
             })
         } else {
             alert("Please ensure that an item is selected !")
@@ -96,9 +98,10 @@ function openItem(type) {
     } else if (type == 'new') {
         $('.modal-bg').css("display", "flex")
         $('.modal-bg').css("opacity", "1")
-        input_fields.map((index) => {
-            input_fields[index].value  = ""
-            input_fields[index].removeAttribute('disabled');
+        children.map((index, child) => {
+            if (child.tagName.toUpperCase() != "P") {
+                child.removeAttribute("disabled")
+            }
         })
     } else {
         console.log('invalid ')
@@ -114,4 +117,19 @@ function closemodal(){
         input_fields[index].value  = ""
         input_fields[index].removeAttribute('disabled');
     })
+}
+function FormJsonData(form) {
+    const formData = {};
+    if (form) {
+        var children = $(`${form} .form-input`).children()
+    } else {
+        var children = $('.form-input').children()
+    }
+    children.map((index, child) => {
+        if (child.tagName.toUpperCase() != "P") {
+            formData[child.name] = child.value
+        }
+    })
+    return formData
+
 }

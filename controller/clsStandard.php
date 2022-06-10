@@ -12,13 +12,15 @@ class clsController
         $this->table = $table;
         if ($columns != '') {
             foreach ($columns as $key => $value) {
-                if ($this->columns != '') {
-                    $this->columns .= ', ';
-                    $this->values .= ", ";
+                if ($value != '') {
+                    if ($this->columns != '') {
+                        $this->columns .= ', ';
+                        $this->values .= ", ";
+                    }
+                    $this->columns .=  "`" . $key . "`";
+                    $this->values .= ":" . $key;
+                    array_push($this->data, $value);
                 }
-                $this->columns .=  "`" . $key . "`";
-                $this->values .= ":" . $key;
-                array_push($this->data, $value);
             }
         }
     }
@@ -68,7 +70,7 @@ class clsController
             $clsConnection = new dbConnection();
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $query = "SELECT * from `$this->table`";
+            $query = "SELECT * from $this->table";
             $stmt = $conn->prepare($query);
             $stmt->execute();
             $db_data = $stmt->fetchAll();

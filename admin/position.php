@@ -1,5 +1,7 @@
 <?php
+
 require('../client/index.php');
+
 ?>
 <div class="department-container">
 
@@ -45,6 +47,7 @@ require('../client/index.php');
                         <th style="width: 10px;">Position Code</th>
                         <th style="width: 120px;">Description</th>
                         <th style="width: 200px;">Rank</th>
+                        <th style="width: 200px;">Department</th>
                     </tr>
                 </thead>
                 <tbody id="mt-table-body">
@@ -53,6 +56,7 @@ require('../client/index.php');
                         <td style="font-weight:bold;">IT-HD</td>
                         <td>HELPDESK</td>
                         <td>MID</td>
+                        <td>IT</td>
                     </tr>
                 </tbody>
 
@@ -65,17 +69,46 @@ require('../client/index.php');
                 <h3>Position Information</h3>
             </div>
             <div class="itm-modal-body">
-                <p>Position Code</p>
-                <input type="text" id="code">
-                <p>Position Description</p>
-                <input type="text" id="description">
-                <p>Rank</p>
-                <input type="number" id="description">
+                <div class="form-input">
+                    <p>Position Code</p>
+                    <input type="text" id="code" name="posCode">
+                </div>
+                <div class="form-input">
+                    <p>Position Description</p>
+                    <input type="text" id="description" name="posDesc">
+                </div>
+                <div class="form-input">
+                    <p>Rank</p>
+                    <select style="width: 100%;" name="posRank">
+                        <option></option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </select>
+                </div>
+                <div class="form-input">
+                    <p>Department</p>
+                    <select style="width: 100%;" name="dept_id">
+                        <option></option>
+                        <?php
+                        $clsConnection = new dbConnection();
+                        $conn = $clsConnection->conn();
+                        $query = "SELECT * from tbo_department";
+                        $stmt = $conn->prepare($query);
+                        $stmt->execute();
+                        while ($data = $stmt->fetch()) {
+                            echo "<option value=" . $data['dept_id'] . ">" . $data['title'] . "-" . $data['desc'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
+
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;">
+                <input type="button" value="Submit" style="background-color: green;" onclick="">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
+
         </div>
     </div>
 </div>
@@ -86,22 +119,51 @@ require('../client/index.php');
         info: false,
         language: {
             "zeroRecords": " "
-        },
+        }
     });
     $(document).ready(() => {
-
-
         $('select[name="table_length"]').first().css('font-size', '10px')
         $('select[name="table_length"]').first().css('border', '0px')
-
         $('#modalClose').click(() => {
             $('.modal-bg').css("opacity", "0")
             $('.modal-bg').css("display", "none")
         })
     })
 
+    async function save() {
+        const response = await fetch("../controller/position.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                xdata: FormJsonData('.itm-modal-body'),
+                action: "new"
+            })
+        })
+        const data = await response.json()
+        loadTable();
+    }
 
-    function save
+    async function loadTable() {
+        $('#mt-table-body').empty()
+        const response = await fetch("../controller/position.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                xdata: "",
+                action: "custom_list"
+            })
+        })
+        const data = await response.json()
+        data.forEach(item => {
+            $('#mt-table-body').append(`<tr data-ticket-id="1" onclick=""><td><input type="checkbox" value="1" id="checkBoxItem"></td><td style="font-weight:bold;">${item['posCode']}</td><td>${item['posDesc']}</td><td>${item['posRank']}</td><td>${item['title']}</td></tr>`)
+        });
+
+    }
+    loadTable()
 </script>
 
 <?php require('../client/footer.php') ?>

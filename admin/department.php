@@ -33,13 +33,21 @@ require('../client/index.php');
     <div class="modal-bg">
         <div class="item-modal" id="openItem">
             <div class="itm-modal-header">
-                <h3>Department Information</h3>
+                <h3>Employee Information</h3>
             </div>
             <div class="itm-modal-body">
-                <p>Deparment Code</p>
-                <input type="text" id="code">
-                <p>Deparment DEscription</p>
-                <input type="text" id="description">
+                <div class="form-input">
+                    <p>Position Code</p>
+                    <input type="text" id="code">
+                </div>
+                <div class="form-input">
+                    <p>Position Description</p>
+                    <input type="text" id="description">
+                </div>
+                <div class="form-input">
+                    <p>Rank</p>
+                    <input type="number" id="description">
+                </div>
             </div>
             <div class="itm-modal-action">
                 <input type="button" value="Save" style="background-color: green;" onclick="save()">
@@ -59,7 +67,7 @@ require('../client/index.php');
         },
     });
     $(document).ready(() => {
-        getdata()
+        loadTable()
         $('select[name="table_length"]').first().css('font-size', '10px')
         $('select[name="table_length"]').first().css('border', '0px')
 
@@ -88,7 +96,7 @@ require('../client/index.php');
                 })
             })
             const data = await res.json();
-            getdata()
+            loadTable()
         } else {
             if ($('#code').val() == '') {
                 $('#code').css("border", "1px solid red")
@@ -98,9 +106,8 @@ require('../client/index.php');
         }
 
     }
-    async function getdata() {
+    async function loadTable() {
         $('#mt-table-body').empty()
-
         const res = await fetch("../controller/department.php", {
             method: 'POST',
             headers: {
@@ -111,7 +118,7 @@ require('../client/index.php');
                     title: $('#code').val(),
                     desc: $('#description').val()
                 },
-                action: "get"
+                action: "get_list"
             })
         })
         const data = await res.json();

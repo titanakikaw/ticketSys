@@ -64,10 +64,13 @@ input[type="button"]{
     font-size: 11px;
     cursor: pointer;
 }
-input[type="text"],[type="password"], [type="number"]{
+input[type="text"],[type="password"], [type="number"], [type="file"]{
     padding: 5px 1rem;
     margin: 5px 0;
     width: 100%;
+}
+.form-input{
+    padding: 0 5px;
 }
 .login-bg{
     width: 100vw;

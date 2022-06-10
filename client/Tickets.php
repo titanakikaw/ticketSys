@@ -31,7 +31,7 @@
     <div class="mt-ticket-container" style="position: relative;">
         <div class="mt-table-actions">
             <input type="button" value="Open" onclick="open_custom_Item('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="createTicket()">
+            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
             <input type="button" value="Mark As Done">
         </div>
         <div class="mt-table">
@@ -42,10 +42,10 @@
                         <th style="width: 20px;">Status</th>
                         <th style="width: 120px;">Ticket Number</th>
                         <th style="width: 200px;">Subject / Title</th>
-                        <th style="width: 170px;">Category</th>
                         <th style="width: 150px;">Date Submitted</th>
                         <th style="width: 180px;">Filed By</th>
-                        <th style="width: 180px;">Location</th>
+                        <th style="width: 180px;">AUTHOR</th>
+                        <th style="width: 180px;">ASSIGNED EMPLOYEE</th>
                     </tr>
                 </thead>
                 <tbody id="mt-table-body">
@@ -54,9 +54,9 @@
                         <td style="font-weight:bold;">Pending</td>
                         <td>000013</td>
                         <td>Sample Subject / Title to Fix</td>
-                        <td>POS 1- Not Working </td>
                         <td>Fri, 13 May 2022</td>
                         <td>ITD - Juan Dela Cruz</td>
+                        <td>EVER - HEAD OFFICE </td>
                         <td>EVER - HEAD OFFICE </td>
                     </tr>
                 </tbody>
@@ -90,7 +90,7 @@
                     <textarea style="width: 100%; padding: 5px; font-size:12px" name="desc"></textarea>
                 </div>
                 <div class="form-group-my-actions" style="padding: 10px; display:flex;justify-content:space-between;align-items:center">
-                    <input type="button" value="Submit Ticket" style="width:100%; margin-left:0; font-size:11px; font-weight:500; text-transform: uppercase;" onclick="newItem()">
+                    <input type="button" value="Submit Ticket" style="width:100%; margin-left:0; font-size:11px; font-weight:500; text-transform: uppercase;" onclick="save()">
                     <input type="button" value="Cancel" style="width:100%; font-size:11px; font-weight:500; text-transform: uppercase;" onclick="cancelNew()">
                 </div>
             </form>
@@ -102,20 +102,53 @@
                 <h3>Ticket INFORMATIOn</h3>
             </div>
             <div class="itm-modal-body">
-                <p>FROM: <span>ITD - JUAN DELA CRUZ</span></p>
-                <p>TO : <span>ITD - TONI DELA CRUZ</span></p>
-                <p>Ticket No :<span> 00000123</span></p>
-                <p>Category :<span> Desktop PC / Laptop</span></p>
-                <p>Date Submitted : <span>12-02-2022</span></p>
-                <p>Ticket Status : <span>Pending</span></p>
+                <div class="" style="display:flex; align-items:center">
+                    <!-- <div class="form-input" style="width: 30%;">
+                        <p>Ticket No.</p>
+                        <input type="text" name="" id="">
+                    </div> -->
+                    <div class="form-input" style="width: 50%;">
+                        <p>To Department</p>
+                        <select style="width: 100%;" name="dept_id">
+                            <option></option>
+                            <?php
+                            $clsConnection = new dbConnection();
+                            $conn = $clsConnection->conn();
+                            $query = "SELECT * from tbo_department";
+                            $stmt = $conn->prepare($query);
+                            $stmt->execute();
+                            while ($data = $stmt->fetch()) {
+                                echo "<option value=" . $data['dept_id'] . ">" . $data['title'] . "-" . $data['desc'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-                <p><span>Concern Explanation:</span></p>
-                <textarea name="explanation" id="" cols="30" rows="10"></textarea>
-            </div>
-            <div class="itm-modal-body">
-                <p>To: <span>ITD - JUAN DELA CRUZ</span></p>
-                <p><span>Solution / Explanation :</span></p>
-                <textarea name="explanation" id="" cols="30" rows="10"></textarea>
+                    <div class="form-input" style="width:30%">
+                        <p>Priority</p>
+                        <select style="width: 100%;" name="priority">
+                            <option></option>
+                            <option>Urgent</option>
+                            <option>High</option>
+                            <option>Normal</option>
+                        </select>
+                    </div>
+                    <div class="form-input">
+                        <p>Files</p>
+                        <input type="file">
+                    </div>
+                </div>
+
+                <div class="form-input">
+                    <p>Subject</p>
+                    <input type="text" name="subject">
+                </div>
+
+                <div class="form-input">
+                    <p>Details :</p>
+                    <textarea style="" name="details"></textarea>
+                </div>
+
             </div>
             <div class="itm-modal-action">
                 <input type="button" value="Submit" style="background-color: green;">
@@ -256,13 +289,14 @@
         getCategory();
     }
 
-    async function newItem() {
+    async function save() {
         let form = document.querySelector('#newticket')
         let data = {
-            params: formObject(form),
-            method: 'new'
+            params: FormJsonData('.itm-modal-body'),
+            method: 'new',
+            currentUser: "<?php echo "Me" ?>"
         };
-        const response = await fetch('../controller/p_ticket.php', {
+        const response = await fetch('../controller/ticket.php', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'

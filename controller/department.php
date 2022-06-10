@@ -10,7 +10,7 @@ switch ($_POST['action']) {
         $clsController = new clsController($_POST['xdata'], "tbo_department");
         echo json_encode($clsController->add());
         break;
-    case 'get':
+    case 'get_list':
         $xparams['params'] = $_POST['xdata'];
         $clsController = new clsController($_POST['xdata'], "tbo_department");
         echo json_encode($clsController->viewlist());

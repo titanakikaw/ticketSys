@@ -10,7 +10,9 @@
 //     session_destroy();
 //     header("Location: ../index.php");
 // }
-
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+// echo '<pre>';
 require('../static/head.php');
 require('../client/components/navbar.php');
 require('../controller/clsConnection.php');

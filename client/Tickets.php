@@ -157,6 +157,7 @@
     })
 
     async function tableLoad() {
+
         $('#mt-table-body').empty();
         const response = await fetch('../controller/ticket.php', {
             method: 'POST',
@@ -183,6 +184,17 @@
             ticketElement += '<tr>';
             $('#mt-table-body').append(ticketElement)
         });
+
+        // $('#mt-table').DataTable({
+        //     searching: false,
+        //     paging: true,
+        //     info: false,
+        //     ordering: false,
+        //     language: {
+        //         "zeroRecords": " "
+        //     }
+        // });
+
     }
 
     function open_custom_Item(type) {

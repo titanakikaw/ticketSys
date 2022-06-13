@@ -138,8 +138,6 @@
                 ticket_id: <?php echo $_POST['ticket_id'] ?>
             })
         })
-
-        // console.log($('#tick_no'))
         const data = await response.json();
         console.log(data)
         if (data != '') {

@@ -41,15 +41,15 @@
                         <th style="width:10px"><input type="checkbox" onclick="checkAllItems(this)" id="checkAll"></th>
                         <th style="width: 20px;">Status</th>
                         <th style="width: 120px;">Ticket Number</th>
-                        <th style="width: 200px;">Subject / Title</th>
+                        <th style="width: 200px;">Subject</th>
                         <th style="width: 150px;">Date Submitted</th>
-                        <th style="width: 180px;">Filed By</th>
                         <th style="width: 180px;">AUTHOR</th>
+                        <th style="width: 180px;">WITH FILES</th>
                         <th style="width: 180px;">ASSIGNED EMPLOYEE</th>
                     </tr>
                 </thead>
                 <tbody id="mt-table-body">
-                    <tr data-ticket-id="1" onclick="">
+                    <!-- <tr data-ticket-id="1" onclick="">
                         <td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="1" id="checkBoxItem"></td>
                         <td style="font-weight:bold;">Pending</td>
                         <td>000013</td>
@@ -58,43 +58,12 @@
                         <td>ITD - Juan Dela Cruz</td>
                         <td>EVER - HEAD OFFICE </td>
                         <td>EVER - HEAD OFFICE </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
 
             </table>
         </div>
-        <div class="mt-new" style="padding: 10px; font-size: 12px; width: 700px;display:none">
-            <form id="newticket">
-                <div class="" style="display: flex; justify-content:space-between">
-                    <div class="form-group-mt">
-                        <p>To : </p>
-                        <select id="new-select-user-mt" name="assigned" style="width: 300px;">
-                            <option></option>
-                        </select>
 
-                        <p>Category : </p>
-                        <select id="new-select-category-mt" name="cat_id" style="width: 300px;">
-                            <option></option>
-                        </select>
-                        <p>Subject / Title: </p>
-                        <input type="text" name="title" style="font-size: 11px;padding-left:5px;" placeholder="Enter Subject or Title">
-                    </div>
-                    <div class="form-group-mt">
-                        <p>Attachments : </p>
-                        <input type="file" name="attachments">
-                    </div>
-                </div>
-
-                <div class="form-group-mt" style="margin-top: 1rem;">
-                    <p>Explanation :</p>
-                    <textarea style="width: 100%; padding: 5px; font-size:12px" name="desc"></textarea>
-                </div>
-                <div class="form-group-my-actions" style="padding: 10px; display:flex;justify-content:space-between;align-items:center">
-                    <input type="button" value="Submit Ticket" style="width:100%; margin-left:0; font-size:11px; font-weight:500; text-transform: uppercase;" onclick="save()">
-                    <input type="button" value="Cancel" style="width:100%; font-size:11px; font-weight:500; text-transform: uppercase;" onclick="cancelNew()">
-                </div>
-            </form>
-        </div>
     </div>
     <div class="modal-bg">
         <div class="item-modal" id="openItem">
@@ -108,7 +77,7 @@
                         <input type="text" name="" id="">
                     </div> -->
                     <div class="form-input" style="width: 50%;">
-                        <p>To Department</p>
+                        <p>Assigned to</p>
                         <select style="width: 100%;" name="dept_id">
                             <option></option>
                             <?php
@@ -159,6 +128,15 @@
 </div>
 <?php require('./footer.php') ?>
 <script>
+    let table = $('#mt-table').DataTable({
+        searching: false,
+        paging: true,
+        info: false,
+        ordering: false,
+        language: {
+            "zeroRecords": " "
+        }
+    });
     $(document).ready(() => {
         $("#ticketDatePicker").datepicker({
             dateFormat: "yy-mm-dd"
@@ -168,42 +146,40 @@
         $('#item3-select2').select2();
         $('#new-select-user-mt').select2();
         $('#new-select-category-mt').select2();
-        $('#mt-table').DataTable({
-            searching: false,
-            paging: true,
-            info: false
-        });
+
 
         $('#modalClose').click(() => {
             $('.modal-bg').css("opacity", "0")
             $('.modal-bg').css("display", "none")
         })
 
-        tableLoad()
+        // tableLoad()
     })
 
     async function tableLoad() {
-        // console.log('test')
-        const response = await fetch('../controller/p_ticket.php', {
+        $('#mt-table-body').empty();
+        const response = await fetch('../controller/ticket.php', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
             },
             body: JSON.stringify({
-                method: 'table'
+                method: 'table',
+                type: 'deptTickets',
+                find: ['9']
             })
         })
         let dataArray = await response.json();
         dataArray.forEach(ticket => {
             let ticketElement = '<tr data-ticket-id="2">';
             ticketElement += '<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="1" id="checkBoxItem"></td>';
-            ticketElement += '<td style = "font-weight:bold;"> Pending </td>';
-            ticketElement += '<td> 000012 </td>';
-            ticketElement += '<td> Sample Subject / Title to Fix </td>';
-            ticketElement += '<td> POS 1 - Not Working </td>';
-            ticketElement += '<td> Fri, 13 May 2022 </td>';
-            ticketElement += '<td> ITD - Juan Dela Cruz </td>';
-            ticketElement += '<td> EVER - HEAD OFFICE </td> ';
+            ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
+            ticketElement += `<td>${ticket['ticket_no']} </td>`;
+            ticketElement += `<td>${ticket['subject']}</td>`;
+            ticketElement += `<td>${ticket['date']}</td>`;
+            ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
+            ticketElement += '<td> NONE</td>';
+            ticketElement += `<td>${ticket['20']}</td>`;
             ticketElement += '<tr>';
             $('#mt-table-body').append(ticketElement)
         });
@@ -340,4 +316,5 @@
             $('#new-select-user-mt').append(`<option value=${element['emp_id']}>${element['lname']}, ${element['fname']}</option>`)
         })
     }
+    tableLoad()
 </script>

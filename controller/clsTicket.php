@@ -1,17 +1,4 @@
 <?php
-
-// function tableList($id, $limit)
-// {
-//     $clsConnection = new dbConnection();
-//     $conn = $clsConnection->conn();
-//     // $query = "SELECT * from tbo_tickets as ticket inner join tbo_employee as emp on ticket.emp_id = emp.emp_id INNER join tbo_ticketcategory as t_cat  on ticket.cat_id = t_cat.cat_id where ticket.assigned=?";
-//     $query = "SELECT * from tx_ServiceRequest";
-//     $stmt = $conn->prepare($query);
-//     $stmt->execute();
-//     $result = $stmt->fetchAll();
-//     return $result;
-// }
-
 function departmentTicket($dept)
 {
     $data = [];
@@ -40,4 +27,20 @@ function geneTicketNo()
     } else {
         return 1;
     }
+}
+function getAssigned($ticketno)
+{
+    $clsConnection = new dbConnection();
+    $conn = $clsConnection->conn();
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $query =   "SELECT CONCAT(tbo_employee.fname,', ',tbo_employee.lname) as assigned from tbo_ticket_assigned as ta 
+    INNER JOIN tbo_ticket on ta.ticket_id = tbo_ticket.ticket_id 
+    INNER JOIN tbo_employee on tbo_employee.emp_id = ta.emp_id where ta.ticket_id =?";
+    $stmt = $conn->prepare($query);
+    $stmt->execute([$ticketno]);
+    $data = $stmt->fetch();
+    // if (!$data) {
+    //     $data['assigned'] == "Unassigned";
+    // }
+    return $data;
 }

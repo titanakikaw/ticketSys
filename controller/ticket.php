@@ -51,6 +51,15 @@ switch ($_POST['method']) {
         $clsController = new clsController('', 'tbo_ticketcategory');
         array_push($response, $clsController->viewlist());
         break;
+    case 'singeTicket':
+        $ticket_id = $_POST['ticket_id'];
+        $clsController = new clsController('', 'tbo_ticket');
+        $response['ticketInfo'] = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ['dept_id', 'emp_id'], true, ['tbo_ticket.ticket_id'], [$ticket_id]);
+        $response['ticketInfo'][0]['assigned'] = getAssigned($ticket_id) ? getAssigned($ticket_id) : "Unassigned";
+        $clsController = new clsController('', 'tbo_ticket_comments');
+        $response['comments'] = $clsController->viewlist2(true, 'tbo_employee', 'emp_id', 'tbo_ticket_comments.ticket_id', $ticket_id);
+        echo json_encode($response);
+        break;
     default:
         # code...
         break;

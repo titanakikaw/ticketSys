@@ -1,24 +1,22 @@
-<?php require('./index.php');
-
-?>
+<?php require('./index.php'); ?>
 <div class="main-container single-ticket">
     <div class="sub-container" style="display: flex;">
         <div class="sub-container-one" style="width: 60%; margin-right:10px;">
             <div class="container" style="margin-top:10px;">
                 <div class="" style="display: flex;justify-content:space-between">
-                    <p class="ptitle" style="font-size: 11px;">Ticket Number: 123456</p>
+                    <p class="ptitle" style="font-size: 11px;">Ticket Number: <label id="tick_no"></label></p>
                     <p class="ptitle" style="font-size: 10px;">Date: December 1, 2001</p>
                 </div>
                 <hr>
-                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Author: Sample User</p>
-                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Department: Sample Department</p>
-                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Priority: High</p>
-                <p class="ptitle" style="font-size: 10px;font-weight:normal;">status: Pending</p>
-                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Subject: <b>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</b></p>
+                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Author: <label id="author"></label></p>
+                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Department: <label id="dept"></label></p>
+                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Priority: <label id="prio"></label></p>
+                <p class="ptitle" style="font-size: 10px;font-weight:normal;">status: <label id="status"></label></p>
+                <p class="ptitle" style="font-size: 10px;font-weight:normal;">Subject: <b><label id="subject"></label></b></p>
                 <hr>
 
                 <p class="ptitle" style="font-size: 10px;font-weight:normal;">Details:</p>
-                <textarea name="details" id="" cols="30" rows="10" style="max-height:400px;width:100%; max-width:100%; font-size: 10px;padding: 5px;"></textarea>
+                <textarea name="details" id="details" cols="30" rows="10" style="max-height:400px;width:100%; max-width:100%; font-size: 10px;padding: 5px;" disabled></textarea>
                 <div class="ticket-actions" style="display: flex; justify-content:space-between;margin-top:1rem">
                     <input type="button" value="Mark as Done" style="margin: 0 5px; background-color:green; color:white">
                     <input type="button" value="Cancel Ticket" style="margin: 0 5px;background-color:rgb(225, 63, 63); color:white">
@@ -125,4 +123,56 @@
 
 
 </div>
+<script>
+    async function getitem() {
+        $('.tcoms-container').empty()
+        $('#tick_no').text("")
+
+        const response = await fetch("../controller/ticket.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                method: 'singeTicket',
+                ticket_id: <?php echo $_POST['ticket_id'] ?>
+            })
+        })
+
+        // console.log($('#tick_no'))
+        const data = await response.json();
+        console.log(data)
+        if (data != '') {
+            data['comments'].forEach(comment => {
+                $newComm = "";
+                $newComm = `<div class="com-card tcom" style="margin: 3px 0;">
+                                <div class="container">
+                                    <p>${comment['comment']}</p>
+                                    <hr>
+                                    <div class="com-card-sender">
+                                        <div class="com-card-img">
+                                            <img src="">
+                                        </div>
+                                        <div class="com-card-info">
+                                            <p class="ptitle" style="font-size: 11px;">${comment['lname']}, ${comment['fname']}</p>
+                                            <p class="ptitle" style="font-size: 8px;font-weight:normal;font-style:oblique">${comment['date']}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`
+                $('.tcoms-container').append($newComm)
+            });
+            let info = data['ticketInfo'][0]
+            $('#tick_no').text(`${info['ticket_no']}`)
+            $('#author').text(`${info['lname']}, ${info['fname']}`)
+            $('#dept').text(`${info['desc']}`)
+            $('#prio').text(`${info['priority']}`)
+            $('#status').text(`${info['status']}`)
+            $('#subject').text(`${info['subject']}`)
+            $('#details').val(`${info['details']}`)
+        }
+
+    }
+    getitem()
+</script>
 <?php require('./footer.php') ?>

@@ -172,7 +172,7 @@
         let dataArray = await response.json();
         dataArray.forEach(ticket => {
             let ticketElement = '<tr data-ticket-id="2">';
-            ticketElement += '<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="1" id="checkBoxItem"></td>';
+            ticketElement += `<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="${ticket['ticket_id']}" id="checkBoxItem"></td>`;
             ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
             ticketElement += `<td>${ticket['ticket_no']} </td>`;
             ticketElement += `<td>${ticket['subject']}</td>`;

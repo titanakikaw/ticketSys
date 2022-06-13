@@ -154,8 +154,9 @@ class clsController
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "SELECT * from $this->table $condition";
+            // vard
             $stmt = $conn->prepare($query);
-            $stmt->execute($find);
+            $stmt->execute([$find]);
             $data = $stmt->fetchAll();
             return $data;
         } catch (\Throwable $th) {
@@ -190,7 +191,6 @@ class clsController
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "SELECT * from $this->table $condition $where_condition";
-
             $stmt = $conn->prepare($query);
             $stmt->execute($find);
             $data = $stmt->fetchAll();

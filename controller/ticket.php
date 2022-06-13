@@ -25,6 +25,9 @@ switch ($_POST['method']) {
             $ticketData = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ["dept_id", 'emp_id'], true, ["tbo_department.dept_id"], $_POST['find']);
             foreach ($ticketData as $key => $value) {
                 $assigned = getAssigned($value['ticket_id']);
+                if (!$assigned) {
+                    $assigned['assigned'] = "Unassigned";
+                }
                 array_push($ticketData[$key], $assigned['assigned']);
             };
             echo json_encode($ticketData);

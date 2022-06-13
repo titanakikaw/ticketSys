@@ -179,7 +179,7 @@
             ticketElement += `<td>${ticket['date']}</td>`;
             ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
             ticketElement += '<td> NONE</td>';
-            ticketElement += `<td>${ticket['20']}</td>`;
+            ticketElement += `<td>${ticket['20'] ? ticket['20'] : 'Unassigned'} </td>`;
             ticketElement += '<tr>';
             $('#mt-table-body').append(ticketElement)
         });

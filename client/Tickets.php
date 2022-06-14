@@ -71,11 +71,8 @@
                 <h3>Ticket INFORMATIOn</h3>
             </div>
             <div class="itm-modal-body">
+                <!-- <form id="" enctype="multipart/form-data"> -->
                 <div class="" style="display:flex; align-items:center">
-                    <!-- <div class="form-input" style="width: 30%;">
-                        <p>Ticket No.</p>
-                        <input type="text" name="" id="">
-                    </div> -->
                     <div class="form-input" style="width: 50%;">
                         <p>Assigned to</p>
                         <select style="width: 100%;" name="dept_id">
@@ -104,7 +101,9 @@
                     </div>
                     <div class="form-input">
                         <p>Files</p>
-                        <input type="file">
+                        <form method="POST" enctype="multipart/form-data" id="file_form">
+                            <input type="file" name="files" id="files">
+                        </form>
                     </div>
                 </div>
 
@@ -117,7 +116,7 @@
                     <p>Details :</p>
                     <textarea style="" name="details"></textarea>
                 </div>
-
+                <!-- </form> -->
             </div>
             <div class="itm-modal-action">
                 <input type="button" value="Submit" style="background-color: green;">
@@ -172,6 +171,7 @@
         })
         let dataArray = await response.json();
         dataArray.forEach(ticket => {
+            console.log(ticket)
             let ticketElement = '<tr data-ticket-id="2">';
             ticketElement += `<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="${ticket['ticket_id']}" id="checkBoxItem"></td>`;
             ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
@@ -179,7 +179,7 @@
             ticketElement += `<td>${ticket['subject']}</td>`;
             ticketElement += `<td>${ticket['date']}</td>`;
             ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
-            ticketElement += '<td> NONE</td>';
+            ticketElement += `<td>${ticket['file'] ? 'YES' : 'NONE'}</td>`;
             ticketElement += `<td>${ticket['20'] ? ticket['20'] : 'Unassigned'} </td>`;
             ticketElement += '<tr>';
             $('#mt-table-body').append(ticketElement)
@@ -278,11 +278,12 @@
     }
 
     async function save() {
-        let form = document.querySelector('#newticket')
+        saveFiles();
         let data = {
             params: FormJsonData('.itm-modal-body'),
+            file: $('#files')[0].files[0].name,
             method: 'new',
-            currentUser: "<?php echo "Me" ?>"
+            currentUser: ""
         };
         const response = await fetch('../controller/ticket.php', {
             method: 'POST',
@@ -292,8 +293,29 @@
             body: JSON.stringify(data)
         })
         let status = await response.json()
-        console.log(data)
+        if (status) {
+            closemodal()
+            tableLoad()
 
+        } else {
+            alert("Failed to create ticket. Please try again.")
+        }
+    }
+
+    async function saveFiles() {
+        const fileForm = document.getElementById('file_form')
+        const file = document.getElementById('files')
+        const formData = new FormData(fileForm);
+        formData.append('file', file[0])
+        const response = await fetch("../controller/clsTicket.php", {
+            method: 'POST',
+            body: formData
+        })
+        const data = await response.json()
+        if (!data) {
+
+            // break;
+        }
     }
 
     async function getCategory() {

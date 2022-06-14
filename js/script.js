@@ -128,6 +128,7 @@ function FormJsonData(form) {
     children.map((index, child) => {
         if (child.tagName.toUpperCase() != "P") {
             formData[child.name] = child.value
+            // console.log(child.tagName)
         }
     })
     return formData

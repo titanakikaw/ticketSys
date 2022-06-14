@@ -1,4 +1,5 @@
 <?php
+
 function departmentTicket($dept)
 {
     $data = [];
@@ -18,15 +19,17 @@ function geneTicketNo()
     $clsConnection = new dbConnection();
     $conn = $clsConnection->conn();
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $query = "SELECT ticket_no from tbo_ticket ORDER BY `date` DESC LIMIT 1";
+    $query = "SELECT ticket_no from tbo_ticket ORDER BY `ticket_id` DESC LIMIT 1";
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $latest = $stmt->fetch();
     if ($latest) {
+        $latest = intval($latest['ticket_no']);
         return $latest += 1;
     } else {
         return 1;
     }
+    // die();
 }
 function getAssigned($ticketno)
 {
@@ -43,4 +46,20 @@ function getAssigned($ticketno)
     //     $data['assigned'] == "Unassigned";
     // }
     return $data;
+}
+function saveImage()
+{
+}
+// var_dump(count($_FILES));
+// die();
+if (count($_FILES) > 0) {
+    $target_folder = "../FILES/";
+    $target_file  = $target_folder . basename($_FILES['files']["name"]);
+    if (move_uploaded_file($_FILES["files"]["tmp_name"], $target_file)) {
+        $res['status'] = true;
+        $res['file'] =   $target_file;
+    } else {
+        $res['status'] = false;
+    }
+    echo json_encode($res);
 }

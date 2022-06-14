@@ -11,9 +11,9 @@ if (!empty($_POST)) {
 
 <div class="login-bg">
     <div class="login-container">
-        <div class="login-logo">
-            <h1>Ticket Monitoring System</h1>
-            <p style="font-size: 9px;">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Totam officiis labore nostrum corrupti.</p>
+        <div class="login-logo" style="margin:1rem;text-align:left">
+            <h1>SAMPLE | TMS</h1>
+            <p style="font-size: 9px;color:#f3f3f3">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Totam officiis labore nostrum corrupti.</p>
         </div>
         <form id="tms-login" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <!-- <input type="text" placeholder="Username" name="username"> -->
@@ -29,7 +29,7 @@ if (!empty($_POST)) {
             </div>
             <div class="login-actions">
                 <input type="button" value="Log in" id="loginBtn" onclick="login()">
-                <a href="">Forgot password</a>
+                <!-- <a href="" style="">Forgot password</a> -->
             </div>
 
         </form>
@@ -39,6 +39,14 @@ if (!empty($_POST)) {
 <input type="text" hidden id="status" name="status">
 <script>
     let form = document.querySelector('#tms-login')
+    let inputfields = $('.login-group-input input');
+    inputfields.map((input, item) => item.addEventListener('keypress', (e) => {
+        if (e.key === "enter") {
+            console.log('hey')
+            login()
+        }
+    }))
+
 
     const login = () => {
         const username = $('#username')

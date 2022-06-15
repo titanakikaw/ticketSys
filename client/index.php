@@ -10,7 +10,7 @@
 //     session_destroy();
 //     header("Location: ../index.php");
 // }
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 // echo '<pre>';
 require('../static/head.php');

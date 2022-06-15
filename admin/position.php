@@ -2,6 +2,7 @@
 
 require('../client/index.php');
 
+
 ?>
 <div class="department-container">
 
@@ -96,6 +97,7 @@ require('../client/index.php');
                         $query = "SELECT * from tbo_department";
                         $stmt = $conn->prepare($query);
                         $stmt->execute();
+                        
                         while ($data = $stmt->fetch()) {
                             echo "<option value=" . $data['dept_id'] . ">" . $data['title'] . "-" . $data['desc'] . "</option>";
                         }
@@ -105,7 +107,7 @@ require('../client/index.php');
             </div>
 
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;" onclick="">
+                <input type="button" value="Submit" style="background-color: green;" onclick="save()">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
 
@@ -113,6 +115,7 @@ require('../client/index.php');
     </div>
 </div>
 <script>
+    console.log('test')
     let table = $('#table').DataTable({
         searching: false,
         paging: true,

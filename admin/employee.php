@@ -33,9 +33,8 @@ require('../client/index.php');
     </div>
     <div class="table-container">
         <div class="table-actions">
-            <input type="button" value="Open" onclick="openItem('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
-            <input type="button" value="Mark As Done">
+            <input type="button" value="New" id="new" onclick="openItem('new')">
+            <input type="button" value="View" onclick="openItem('existing')">
         </div>
         <div class="table">
             <table id="table">
@@ -96,13 +95,23 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Department:</p>
-                        <select style="width: 100%;">
-                            <option></option>
+                        <select style="width: 100%;" id="department" onchange="handleDeptChange()" name="dept_id">
+                        <option></option>
+                            <?php
+                                $clsConnection = new dbConnection(); 
+                                $conn = $clsConnection->conn();
+                                $query = "SELECT * from tbo_department";
+                                $stmt = $conn->prepare($query);
+                                $stmt->execute();
+                                while($data = $stmt->fetch()){
+                                    echo '<option value='.$data['dept_id'].'>'.$data['title'].'-'.$data['desc'].'</option>';
+                                }
+                            ?>
                         </select>
                     </div>
                     <div class="form-input" style="width: 45%;margin:5px">
                         <p>Position:</p>
-                        <select style="width: 100%;">
+                        <select style="width: 100%;" id="positions" name="pos_id">
                             <option></option>
                         </select>
                     </div>
@@ -111,11 +120,11 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="width: 45%;margin:5px">
                         <p>Username:</p>
-                        <input type="text" name="[txt][username]">
+                        <input type="text" name="[username]">
                     </div>
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Password:</p>
-                        <input type="password" name="[txt][password]">
+                        <input type="password" name="[password]">
                     </div>
                 </div>
 
@@ -149,12 +158,39 @@ require('../client/index.php');
 
 
     function save() {
-        var children = $('.form-input').children()
-        children.map((index, child) => {
-            if (child.tagName.toUpperCase() != "P") {
-                child.setAttribute("disabled", "")
-            }
+        console.log(FormJsonData('.itm-modal-body'));
+
+        // const response = await fetch("../controller/position.php", {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         xdata: FormJsonData('.itm-modal-body'),
+        //         action: "new"
+        //     })
+        // })
+    }
+
+    async function handleDeptChange(){
+        $('#positions').empty()
+        $('#positions').append(`<option></option>`);
+        const response = await fetch ("../controller/employee.php", {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({
+                action : "get_position",
+                xdata : {
+                    dept_id : `${$('#department').val()}`
+                }
+            })
         })
+        const data = await response.json()
+        data.forEach(item => {
+            $('#positions').append(`<option value=${item['pos_id']}>${item['posCode']} - ${item['posDesc']}</option>`)
+        });
     }
 </script>
 

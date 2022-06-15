@@ -126,6 +126,7 @@ function FormJsonData(form) {
         var children = $('.form-input').children()
     }
     children.map((index, child) => {
+        // console.log(child.tagName)
         if (child.tagName.toUpperCase() != "P") {
             formData[child.name] = child.value
         }

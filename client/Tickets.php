@@ -1,5 +1,6 @@
 <?php require('./index.php');
-// die();
+// die();\
+
 ?>
 <div class="main-tickets">
     <div class="search-filter">
@@ -119,7 +120,7 @@
                 <!-- </form> -->
             </div>
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;">
+                <input type="button" value="Submit" style="background-color: green;" onclick="save()">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
         </div>
@@ -166,7 +167,7 @@
             body: JSON.stringify({
                 method: 'table',
                 type: 'deptTickets',
-                find: ['9']
+                find: ['2']
             })
         })
         let dataArray = await response.json();
@@ -283,7 +284,7 @@
             params: FormJsonData('.itm-modal-body'),
             file: $('#files')[0].files[0].name,
             method: 'new',
-            currentUser: ""
+            currentUser: "<?php echo $_SESSION['current_id'] ?>"
         };
         const response = await fetch('../controller/ticket.php', {
             method: 'POST',

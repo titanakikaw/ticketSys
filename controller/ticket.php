@@ -1,11 +1,8 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-
 require('./clsConnection.php');
-
 require('./clsStandard.php');
-
 require('./clsTicket.php');
 header('Content-Type: application/json');
 $_POST = json_decode(file_get_contents('php://input'), true);
@@ -17,18 +14,19 @@ switch ($_POST['method']) {
         $_POST['params']['date'] = date('d/m/Y');
         $_POST['params']['status'] = "Pending";
         $_POST['params']['file'] = "../FILES/" . $_POST['file'];
-        $_POST['params']['emp_id'] = 3;
+        $_POST['params']['emp_id'] = $_POST['currentUser'];
         $clsController = new clsController($_POST['params'], 'tbo_ticket');
         echo json_encode($clsController->add());
         break;
     case 'table':
         $TYPE = $_POST['type'];
         if ($TYPE == "deptTickets") {
+            
             $clsController = new clsController("", "tbo_ticket");
             $ticketData = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ["dept_id", 'emp_id'], true, ["tbo_department.dept_id"], $_POST['find']);
             foreach ($ticketData as $key => $value) {
-                $assigned = getAssigned($value['ticket_id']);
-                if (!$assigned) {
+                $assigned['stat'] = getAssigned($value['ticket_id']);
+                if (!$assigned['stat'] ) {
                     $assigned['assigned'] = "Unassigned";
                 }
                 array_push($ticketData[$key], $assigned['assigned']);

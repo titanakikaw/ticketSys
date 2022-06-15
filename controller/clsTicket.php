@@ -1,17 +1,5 @@
 <?php
 
-// function tableList($id, $limit)
-// {
-//     $clsConnection = new dbConnection();
-//     $conn = $clsConnection->conn();
-//     // $query = "SELECT * from tbo_tickets as ticket inner join tbo_employee as emp on ticket.emp_id = emp.emp_id INNER join tbo_ticketcategory as t_cat  on ticket.cat_id = t_cat.cat_id where ticket.assigned=?";
-//     $query = "SELECT * from tx_ServiceRequest";
-//     $stmt = $conn->prepare($query);
-//     $stmt->execute();
-//     $result = $stmt->fetchAll();
-//     return $result;
-// }
-
 function departmentTicket($dept)
 {
     $data = [];
@@ -31,13 +19,47 @@ function geneTicketNo()
     $clsConnection = new dbConnection();
     $conn = $clsConnection->conn();
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $query = "SELECT ticket_no from tbo_ticket ORDER BY `date` DESC LIMIT 1";
+    $query = "SELECT ticket_no from tbo_ticket ORDER BY `ticket_id` DESC LIMIT 1";
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $latest = $stmt->fetch();
     if ($latest) {
+        $latest = intval($latest['ticket_no']);
         return $latest += 1;
     } else {
         return 1;
     }
+    // die();
+}
+function getAssigned($ticketno)
+{
+    $clsConnection = new dbConnection();
+    $conn = $clsConnection->conn();
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $query =   "SELECT CONCAT(tbo_employee.fname,', ',tbo_employee.lname) as assigned from tbo_ticket_assigned as ta 
+    INNER JOIN tbo_ticket on ta.ticket_id = tbo_ticket.ticket_id 
+    INNER JOIN tbo_employee on tbo_employee.emp_id = ta.emp_id where ta.ticket_id =?";
+    $stmt = $conn->prepare($query);
+    $stmt->execute([$ticketno]);
+    $data = $stmt->fetch();
+    // if (!$data) {
+    //     $data['assigned'] == "Unassigned";
+    // }
+    return $data;
+}
+function saveImage()
+{
+}
+// var_dump(count($_FILES));
+// die();
+if (count($_FILES) > 0) {
+    $target_folder = "../FILES/";
+    $target_file  = $target_folder . basename($_FILES['files']["name"]);
+    if (move_uploaded_file($_FILES["files"]["tmp_name"], $target_file)) {
+        $res['status'] = true;
+        $res['file'] =   $target_file;
+    } else {
+        $res['status'] = false;
+    }
+    echo json_encode($res);
 }

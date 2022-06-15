@@ -139,4 +139,65 @@ class clsController
             return false;
         }
     }
+    function viewlist2($innerjoin, $table2, $link, $where, $find)
+    {
+        $condition = "";
+        if ($innerjoin) {
+            $table1 = "$this->table.$link";
+            $condition .= "INNER JOIN $table2 on $table1 = $table2.$link";
+        }
+        if ($where != '') {
+            $condition .= " where $where = ?";
+        }
+        try {
+            $clsConnection = new dbConnection();
+            $conn = $clsConnection->conn();
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $query = "SELECT * from $this->table $condition";
+            // vard
+            $stmt = $conn->prepare($query);
+            $stmt->execute([$find]);
+            $data = $stmt->fetchAll();
+            return $data;
+        } catch (\Throwable $th) {
+            var_dump($th);
+            return false;
+        }
+    }
+    function viewlist3($innerjoin, $tables, $links, $hasCondition, $where, $find)
+    {
+        $condition = "";
+        $where_condition = "";
+        if ($innerjoin) {
+            foreach ($tables as $key => $value) {
+                $condition .= "INNER JOIN ";
+                $table1 = trim($this->table) . ".$links[$key]";
+                $condition .= "$value on $table1 = $value.$links[$key] ";
+            }
+        };
+
+        if ($hasCondition) {
+            foreach ($where as $key => $value) {
+                if ($value != '') {
+                    $where_condition .= "AND";
+                }
+                $where_condition = $value . " = ?";
+            }
+            $where_condition = "where " .  $where_condition;
+        }
+
+        try {
+            $clsConnection = new dbConnection();
+            $conn = $clsConnection->conn();
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $query = "SELECT * from $this->table $condition $where_condition";
+            $stmt = $conn->prepare($query);
+            $stmt->execute($find);
+            $data = $stmt->fetchAll();
+            return $data;
+        } catch (\Throwable $th) {
+            var_dump($th);
+            return false;
+        }
+    }
 }

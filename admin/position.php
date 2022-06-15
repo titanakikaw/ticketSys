@@ -37,8 +37,10 @@ require('../client/index.php');
     <div class="table-container">
         <div class="table-actions">
             <input type="button" value="Open" onclick="openItem('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
-            <input type="button" value="Mark As Done">
+            <input type="button" value="New" id="new" onclick="openItem('new')">
+            <input type="button" value="Edit" id="new" onclick="openItem('new')">
+            <input type="button" value="Delete" id="new" onclick="openItem('new')">
+            <!-- <input type="button" value="Mark As Done"> -->
         </div>
         <div class="table">
             <table id="table">
@@ -52,13 +54,6 @@ require('../client/index.php');
                     </tr>
                 </thead>
                 <tbody id="mt-table-body">
-                    <tr data-ticket-id="1" onclick="">
-                        <td><input type="checkbox" value="1" id="checkBoxItem"></td>
-                        <td style="font-weight:bold;">IT-HD</td>
-                        <td>HELPDESK</td>
-                        <td>MID</td>
-                        <td>IT</td>
-                    </tr>
                 </tbody>
 
             </table>
@@ -120,6 +115,7 @@ require('../client/index.php');
         searching: false,
         paging: true,
         info: false,
+
         language: {
             "zeroRecords": " "
         }
@@ -145,11 +141,13 @@ require('../client/index.php');
             })
         })
         const data = await response.json()
-        loadTable();
+        closemodal();
+        loadTable()
     }
 
     async function loadTable() {
         $('#mt-table-body').empty()
+        // table.clear()
         const response = await fetch("../controller/position.php", {
             method: 'POST',
             headers: {
@@ -164,7 +162,7 @@ require('../client/index.php');
         data.forEach(item => {
             $('#mt-table-body').append(`<tr data-ticket-id="1" onclick=""><td><input type="checkbox" value="1" id="checkBoxItem"></td><td style="font-weight:bold;">${item['posCode']}</td><td>${item['posDesc']}</td><td>${item['posRank']}</td><td>${item['title']}</td></tr>`)
         });
-
+        // table.draw()
     }
     loadTable()
 </script>

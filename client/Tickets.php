@@ -1,6 +1,6 @@
 <?php require('./index.php');
-// die();\
-
+// var_dump($_SESSION);
+// die();
 ?>
 <div class="main-tickets">
     <div class="search-filter">
@@ -167,7 +167,7 @@
             body: JSON.stringify({
                 method: 'table',
                 type: 'deptTickets',
-                find: ['2']
+                find: ['<?php echo $_SESSION['dept']; ?>']
             })
         })
         let dataArray = await response.json();

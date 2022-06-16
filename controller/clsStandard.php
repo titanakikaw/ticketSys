@@ -51,15 +51,12 @@ class clsController
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "INSERT INTO `$this->table` ($this->columns) VALUES ($this->values)";
-           
+
             $stmt = $conn->prepare($query);
             foreach (explode(",", $this->values) as $key => $value) {
                 $value = trim($value);
                 $stmt->bindParam("$value",  $this->data[$key]);
-                var_dump($this->data[$key]);
             }
-           
-            die();
             $stmt->execute();
             return true;
         } catch (\Throwable $error) {

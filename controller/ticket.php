@@ -10,7 +10,7 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 switch ($_POST['method']) {
     case 'new':
         $_POST['params']['ticket_no'] = geneTicketNo();
-        $_POST['params']['create_by'] = $_POST['currentUser'];
+        // $_POST['params']['create_by'] = $_POST['currentUser'];
         $_POST['params']['date'] = date('d/m/Y');
         $_POST['params']['status'] = "Pending";
         $_POST['params']['file'] = "../FILES/" . $_POST['file'];
@@ -21,12 +21,11 @@ switch ($_POST['method']) {
     case 'table':
         $TYPE = $_POST['type'];
         if ($TYPE == "deptTickets") {
-            
             $clsController = new clsController("", "tbo_ticket");
             $ticketData = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ["dept_id", 'emp_id'], true, ["tbo_department.dept_id"], $_POST['find']);
             foreach ($ticketData as $key => $value) {
                 $assigned['stat'] = getAssigned($value['ticket_id']);
-                if (!$assigned['stat'] ) {
+                if (!$assigned['stat']) {
                     $assigned['assigned'] = "Unassigned";
                 }
                 array_push($ticketData[$key], $assigned['assigned']);

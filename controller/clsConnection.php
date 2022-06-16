@@ -14,7 +14,7 @@ class dbConnection
     function conn()
     {
         try {
-            $conn = new PDO("mysql:Server=$this->servername;dbname=$this->database", $this->username, $this->password, [True]);
+            $conn = new PDO("mysql:Server=$this->servername;dbname=$this->database", "private", "123", [True]);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         } catch (PDOException $e) {

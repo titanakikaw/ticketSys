@@ -13,7 +13,7 @@ if ($_GET['login'] = '1') {
     try {
         $clsConnection = new dbConnection();
         $conn = $clsConnection->conn();
-        $query = "SELECT * from tbo_employee as emp INNER JOIN tbo_emp_position as pos on emp.pos_id = pos.pos_id where emp.username=? AND emp.pass=?";
+        $query = "SELECT emp.fname, emp.lname, emp.emp_id, pos.posDesc, pos.posRank, dept.dept_id from tbo_employee as emp INNER JOIN tbo_emp_position as pos on emp.pos_id = pos.pos_id INNER JOIN tbo_department as dept on pos.dept_id = dept.dept_id where emp.username=? AND emp.pass=?";
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmt = $conn->prepare($query);
         $stmt->execute($credential);
@@ -25,6 +25,7 @@ if ($_GET['login'] = '1') {
         $_SESSION['fname'] = $result['fname'];
         $_SESSION['position'] = $result['posDesc'];
         $_SESSION['rank'] = $result['posRank'];
+        $_SESSION['dept_code'] = $result['dept_id'];
         header("Location: client/Dashboard.php", true);
     } catch (\Throwable $th) {
         header("Location : index.php");

@@ -85,11 +85,11 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="margin:5px">
                         <p>Lastname</p>
-                        <input type="text" id="code">
+                        <input type="text" id="code" name="lname">
                     </div>
                     <div class="form-input" style="margin:5px">
                         <p>Firstname</p>
-                        <input type="text" id="description">
+                        <input type="text" id="description" name="fname">
                     </div>
                 </div>
                 <div class="" style="display:flex;">
@@ -120,17 +120,17 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="width: 45%;margin:5px">
                         <p>Username:</p>
-                        <input type="text" name="[username]">
+                        <input type="text" name="username">
                     </div>
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Password:</p>
-                        <input type="password" name="[password]">
+                        <input type="password" name="pass">
                     </div>
                 </div>
 
             </div>
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;">
+                <input type="button" value="Submit" style="background-color: green;" onclick="save()">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
         </div>
@@ -144,6 +144,54 @@ require('../client/index.php');
         language: {
             "zeroRecords": " "
         },
+        "ajax" : {
+            "url" : '../controller/employee.php',
+            "type" : 'POST',
+            "contentType": "application/json",
+            "data": function ( ) {
+                return JSON.stringify({
+                     action : 'table',
+                    xdata : {
+                        table : true
+                    }}
+                );
+            },
+
+            "success" : (data) => {
+                table.clear()
+                if(data){
+                    data.forEach(emp => {
+                        let ranking = emp['posRank'];
+                        let rank = ''
+                        switch(ranking){
+                            case '1': 
+                                rank = 'JR'
+                                break;
+                            case '2': 
+                                rank = 'MID'
+                                break;
+                            case '3':
+                                rank = "SR"
+                                break;
+                            default: 
+                                rank = "Undefined"
+                                break;
+                        }
+                        table.row.add( [
+                            `<input type="checkbox" value="1" id="checkBoxItem">`,
+                            `${emp['emp_id']}`,
+                            `${emp['lname']}, ${emp['fname']}`,
+                            `${emp['posDesc']}`,
+                            `${rank}`,
+                            `${emp['desc']}`,
+                            `${emp['username']}`,
+                            `${emp['pass']}`
+                        ] ).draw( false );
+
+                    }); 
+                }
+            }
+        }
     });
     $(document).ready(() => {
 
@@ -157,19 +205,22 @@ require('../client/index.php');
     })
 
 
-    function save() {
-        console.log(FormJsonData('.itm-modal-body'));
-
-        // const response = await fetch("../controller/position.php", {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         xdata: FormJsonData('.itm-modal-body'),
-        //         action: "new"
-        //     })
-        // })
+    async function save() {
+        // console.log(FormJsonData('.itm-modal-body'));
+       
+        const response = await fetch("../controller/employee.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                xdata: FormJsonData('.itm-modal-body'),
+                action: "new"
+            })
+        })
+        const data = await response.json();
+        $('#table').DataTable().ajax.reload();
+        closemodal();
     }
 
     async function handleDeptChange(){
@@ -191,6 +242,60 @@ require('../client/index.php');
         data.forEach(item => {
             $('#positions').append(`<option value=${item['pos_id']}>${item['posCode']} - ${item['posDesc']}</option>`)
         });
+    }
+
+    async function loadTable() {
+        table.clear()
+        const response = await fetch("../controller/employee.php", {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({
+                action : 'table',
+                xdata : {
+                    table : true
+                }
+            })
+        })
+        const data = await response.json()
+        if(data){
+            data.forEach(emp => {
+                let ranking = emp['posRank'];
+                let rank = ''
+                switch(ranking){
+                    case '1': 
+                        rank = 'JR'
+                        break;
+                    case '2': 
+                        rank = 'MID'
+                        break;
+                    case '3':
+                        rank = "SR"
+                        break;
+                    default: 
+                        rank = "Undefined"
+                        break;
+                }
+                table.row.add( [
+                    `<input type="checkbox" value="1" id="checkBoxItem">`,
+                    `${emp['emp_id']}`,
+                    `${emp['lname']}, ${emp['fname']}`,
+                    `${emp['posDesc']}`,
+                    `${rank}`,
+                    `${emp['desc']}`,
+                    `${emp['username']}`,
+                    `${emp['pass']}`
+                ] ).draw( false );
+
+            }); 
+        }
+    }
+    // loadTable() 
+
+
+    function convDate(){
+
     }
 </script>
 

@@ -42,6 +42,7 @@ function getAssigned($ticketno)
     $stmt = $conn->prepare($query);
     $stmt->execute([$ticketno]);
     $data = $stmt->fetch();
+    // die();
     // if (!$data) {
     //     $data['assigned'] == "Unassigned";
     // }

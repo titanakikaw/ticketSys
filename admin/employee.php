@@ -33,19 +33,21 @@ require('../client/index.php');
     </div>
     <div class="table-container">
         <div class="table-actions">
+            <input type="button" value="Open" onclick="openItem('existing')">
             <input type="button" value="New" id="new" onclick="openItem('new')">
-            <input type="button" value="View" onclick="openItem('existing')">
+            <input type="button" value="Edit" id="new" onclick="openItem('new')">
+            <input type="button" value="Delete" id="new" onclick="openItem('new')">
         </div>
         <div class="table">
             <table id="table">
                 <thead>
                     <tr>
                         <th style="width:10px"><input type="checkbox" onclick="checkAllItems(this)" id="checkAll"></th>
-                        <th style="width: 80px;">Employee Code</th>
+                        <th style="width: 50px;">Code</th>
                         <th style="width: 150px;">Full Name</th>
                         <th style="width: 100px;">Position</th>
-                        <th style="width: 100px;">Rank</th>
-                        <th style="width: 100px;">Department</th>
+                        <th style="width: 80px;">Rank</th>
+                        <th style="width: 150px;">Department</th>
                         <th style="width: 100px;">Username</th>
                         <th style="width: 100px;">Password</th>
                     </tr>
@@ -96,16 +98,16 @@ require('../client/index.php');
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Department:</p>
                         <select style="width: 100%;" id="department" onchange="handleDeptChange()" name="dept_id">
-                        <option></option>
+                            <option></option>
                             <?php
-                                $clsConnection = new dbConnection(); 
-                                $conn = $clsConnection->conn();
-                                $query = "SELECT * from tbo_department";
-                                $stmt = $conn->prepare($query);
-                                $stmt->execute();
-                                while($data = $stmt->fetch()){
-                                    echo '<option value='.$data['dept_id'].'>'.$data['title'].'-'.$data['desc'].'</option>';
-                                }
+                            $clsConnection = new dbConnection();
+                            $conn = $clsConnection->conn();
+                            $query = "SELECT * from tbo_department";
+                            $stmt = $conn->prepare($query);
+                            $stmt->execute();
+                            while ($data = $stmt->fetch()) {
+                                echo '<option value=' . $data['dept_id'] . '>' . $data['title'] . '-' . $data['desc'] . '</option>';
+                            }
                             ?>
                         </select>
                     </div>
@@ -144,40 +146,40 @@ require('../client/index.php');
         language: {
             "zeroRecords": " "
         },
-        "ajax" : {
-            "url" : '../controller/employee.php',
-            "type" : 'POST',
+        "ajax": {
+            "url": '../controller/employee.php',
+            "type": 'POST',
             "contentType": "application/json",
-            "data": function ( ) {
+            "data": function() {
                 return JSON.stringify({
-                     action : 'table',
-                    xdata : {
-                        table : true
-                    }}
-                );
+                    action: 'table',
+                    xdata: {
+                        table: true
+                    }
+                });
             },
 
-            "success" : (data) => {
+            "success": (data) => {
                 table.clear()
-                if(data){
+                if (data) {
                     data.forEach(emp => {
                         let ranking = emp['posRank'];
                         let rank = ''
-                        switch(ranking){
-                            case '1': 
+                        switch (ranking) {
+                            case '1':
                                 rank = 'JR'
                                 break;
-                            case '2': 
+                            case '2':
                                 rank = 'MID'
                                 break;
                             case '3':
                                 rank = "SR"
                                 break;
-                            default: 
+                            default:
                                 rank = "Undefined"
                                 break;
                         }
-                        table.row.add( [
+                        table.row.add([
                             `<input type="checkbox" value="1" id="checkBoxItem">`,
                             `${emp['emp_id']}`,
                             `${emp['lname']}, ${emp['fname']}`,
@@ -186,9 +188,9 @@ require('../client/index.php');
                             `${emp['desc']}`,
                             `${emp['username']}`,
                             `${emp['pass']}`
-                        ] ).draw( false );
+                        ]).draw(false);
 
-                    }); 
+                    });
                 }
             }
         }
@@ -207,7 +209,7 @@ require('../client/index.php');
 
     async function save() {
         // console.log(FormJsonData('.itm-modal-body'));
-       
+
         const response = await fetch("../controller/employee.php", {
             method: 'POST',
             headers: {
@@ -223,18 +225,18 @@ require('../client/index.php');
         closemodal();
     }
 
-    async function handleDeptChange(){
+    async function handleDeptChange() {
         $('#positions').empty()
         $('#positions').append(`<option></option>`);
-        const response = await fetch ("../controller/employee.php", {
-            method : 'POST',
-            headers : {
-                'Content-type' : 'application/json'
+        const response = await fetch("../controller/employee.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
             },
-            body : JSON.stringify({
-                action : "get_position",
-                xdata : {
-                    dept_id : `${$('#department').val()}`
+            body: JSON.stringify({
+                action: "get_position",
+                xdata: {
+                    dept_id: `${$('#department').val()}`
                 }
             })
         })
@@ -247,37 +249,37 @@ require('../client/index.php');
     async function loadTable() {
         table.clear()
         const response = await fetch("../controller/employee.php", {
-            method : 'POST',
-            headers : {
-                'Content-type' : 'application/json'
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
             },
-            body : JSON.stringify({
-                action : 'table',
-                xdata : {
-                    table : true
+            body: JSON.stringify({
+                action: 'table',
+                xdata: {
+                    table: true
                 }
             })
         })
         const data = await response.json()
-        if(data){
+        if (data) {
             data.forEach(emp => {
                 let ranking = emp['posRank'];
                 let rank = ''
-                switch(ranking){
-                    case '1': 
+                switch (ranking) {
+                    case '1':
                         rank = 'JR'
                         break;
-                    case '2': 
+                    case '2':
                         rank = 'MID'
                         break;
                     case '3':
                         rank = "SR"
                         break;
-                    default: 
+                    default:
                         rank = "Undefined"
                         break;
                 }
-                table.row.add( [
+                table.row.add([
                     `<input type="checkbox" value="1" id="checkBoxItem">`,
                     `${emp['emp_id']}`,
                     `${emp['lname']}, ${emp['fname']}`,
@@ -286,15 +288,15 @@ require('../client/index.php');
                     `${emp['desc']}`,
                     `${emp['username']}`,
                     `${emp['pass']}`
-                ] ).draw( false );
+                ]).draw(false);
 
-            }); 
+            });
         }
     }
     // loadTable() 
 
 
-    function convDate(){
+    function convDate() {
 
     }
 </script>

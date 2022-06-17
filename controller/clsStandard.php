@@ -24,7 +24,6 @@ class clsController
             }
         }
     }
-
     function check()
     {
         try {
@@ -43,7 +42,6 @@ class clsController
             return false;
         }
     }
-
     function add()
     {
         try {
@@ -98,7 +96,7 @@ class clsController
             die();
         }
     }
-    function update($id, $identifier)
+    function update($iValue, $identifier)
     {
         try {
             $this->columns = str_replace(':', '', $this->columns);
@@ -115,7 +113,7 @@ class clsController
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "UPDATE `$this->table` SET $set where $identifier = ?";
             $stmt = $conn->prepare($query);
-            $stmt->execute([$id]);
+            $stmt->execute([$iValue]);
             return true;
         } catch (\Throwable $error) {
             var_dump($error);
@@ -123,16 +121,17 @@ class clsController
             // die();
         }
     }
-
-    function delete()
+    function delete($column, $value)
     {
         try {
             $clsConnection = new dbConnection();
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $query = "DELETE from `$this->table` where $this->columns=?";
+            $query = "DELETE from `$this->table` where $column=?";
             $stmt = $conn->prepare($query);
-            $stmt->execute($this->data);
+            $stmt->execute([$value]);
+            // var_dump([$value]);
+            // die();
             return true;
         } catch (\Throwable $th) {
             var_dump($th);
@@ -154,7 +153,7 @@ class clsController
             $conn = $clsConnection->conn();
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "SELECT * from $this->table $condition";
-            
+
             $stmt = $conn->prepare($query);
             $stmt->execute([$find]);
             $data = $stmt->fetchAll();

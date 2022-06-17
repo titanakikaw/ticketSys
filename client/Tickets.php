@@ -28,6 +28,8 @@ switch ($_GET['ticket']) {
                 <select id="item2-select2" data2-placeholder="Select a status" style="width: 237px; font-size: 11px">
                     <option value="NA">Select a status</option>
                     <option>Pending</option>
+                    <option>Ongoing</option>
+                    <option>For Checking</option>
                     <option>Done</option>
                 </select>
                 <div class="" style="width: 18px;"></div>
@@ -43,8 +45,10 @@ switch ($_GET['ticket']) {
     <div class="mt-ticket-container" style="position: relative;">
         <div class="mt-table-actions">
             <input type="button" value="Open" onclick="open_custom_Item('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
-            <input type="button" value="Mark As Done">
+            <input type="button" value="New" id="new" onclick="openItem('new')">
+            <input type="button" value="Delete" onclick="deleteItem()">
+            <input type="button" value="Mark As Done" onclick="markasdone()">
+            <input type="button" value="Assign Ticket" onclick="">
         </div>
         <div class="mt-table">
             <table id="mt-table">
@@ -139,8 +143,8 @@ switch ($_GET['ticket']) {
 </div>
 <?php require('./footer.php') ?>
 <script>
-    let lookup = '<?php echo $_GET['ticket'];?>';
-    
+    let lookup = '<?php echo $_GET['ticket']; ?>';
+
     let table = $('#mt-table').DataTable({
         searching: false,
         paging: true,
@@ -149,26 +153,25 @@ switch ($_GET['ticket']) {
         language: {
             "zeroRecords": " "
         },
-        "ajax" : {
-            "url" : '../controller/ticket.php',
-            "type" : 'POST',
+        "ajax": {
+            "url": '../controller/ticket.php',
+            "type": 'POST',
             "contentType": "application/json",
-            "data": function ( ) {
+            "data": function() {
                 return JSON.stringify({
                     method: 'table',
                     type: lookup,
                     find: [`<?php echo $find ?>`]
                     // find: ['1']
                 });
-                
+
             },
 
-            "success" : (data) => {
+            "success": (data) => {
                 table.clear()
-                if(data){
+                if (data) {
                     data.forEach(ticket => {
-                        console.log(ticket)
-                        table.row.add( [
+                        table.row.add([
                             `<input type="checkbox"  value="${ticket['ticket_id']}" id="checkBoxItem">`,
                             `${ticket['status']}`,
                             `${ticket['ticket_no']}`,
@@ -177,9 +180,9 @@ switch ($_GET['ticket']) {
                             `${ticket['lname']}, ${ticket['fname']}`,
                             `${ticket['file'] ? 'YES' : 'NONE'}`,
                             `${ticket['20'] ? ticket['20'] : 'Unassigned'}`
-                        ] ).draw( false );
+                        ]).draw(false);
 
-                    }); 
+                    });
                 }
             }
         }
@@ -203,47 +206,22 @@ switch ($_GET['ticket']) {
         // tableLoad()
     })
 
-    // async function tableLoad() {
-
-        //     $('#mt-table-body').empty();
-        //     const response = await fetch('../controller/ticket.php', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-type': 'application/json'
-        //         },
-        //         body: JSON.stringify({
-        //             method: 'table',
-        //             type: 'deptTickets',
-        //             find: ['2']
-        //         })
-        //     })
-        //     let dataArray = await response.json();
-        //     dataArray.forEach(ticket => {
-        //         console.log(ticket)
-        //         let ticketElement = '<tr data-ticket-id="2">';
-        //         ticketElement += `<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="${ticket['ticket_id']}" id="checkBoxItem"></td>`;
-        //         ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
-        //         ticketElement += `<td>${ticket['ticket_no']} </td>`;
-        //         ticketElement += `<td>${ticket['subject']}</td>`;
-        //         ticketElement += `<td>${ticket['date']}</td>`;
-        //         ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
-        //         ticketElement += `<td>${ticket['file'] ? 'YES' : 'NONE'}</td>`;
-        //         ticketElement += `<td>${ticket['20'] ? ticket['20'] : 'Unassigned'} </td>`;
-        //         ticketElement += '<tr>';
-        //         $('#mt-table-body').append(ticketElement)
-        //     });
-
-        //     // $('#mt-table').DataTable({
-        //     //     searching: false,
-        //     //     paging: true,
-        //     //     info: false,
-        //     //     ordering: false,
-        //     //     language: {
-        //     //         "zeroRecords": " "
-        //     //     }
-        //     // });
-
-    // }
+    async function deleteItem() {
+        let items = document.querySelectorAll('#checkBoxItem')
+        selectedItems(items)
+        const response = await fetch("../controller/ticket.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                method: 'delete',
+                xdata: selectedItems(items)
+            })
+        })
+        const data = response.json();
+        $('#mt-table').DataTable().ajax.reload();
+    }
 
     function open_custom_Item(type) {
 
@@ -344,7 +322,7 @@ switch ($_GET['ticket']) {
         if (status) {
             closemodal()
             $('#mt-table').DataTable().ajax.reload();
-             // tableLoad()
+            // tableLoad()
 
         } else {
             alert("Failed to create ticket. Please try again.")
@@ -395,6 +373,23 @@ switch ($_GET['ticket']) {
         items[0].forEach(element => {
             $('#new-select-user-mt').append(`<option value=${element['emp_id']}>${element['lname']}, ${element['fname']}</option>`)
         })
+    }
+
+    async function markasdone() {
+        let items = document.querySelectorAll('#checkBoxItem')
+        selectedItems(items)
+        const response = await fetch("../controller/ticket.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                method: 'update',
+                xdata: selectedItems(items)
+            })
+        })
+        const data = response.json();
+        $('#mt-table').DataTable().ajax.reload();
     }
     // tableLoad()
 </script>

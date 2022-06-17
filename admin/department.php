@@ -10,9 +10,11 @@ require('../client/index.php');
     </div>
     <div class="table-container">
         <div class="table-actions">
-           
-            <input type="button" value="New Department" id="new" onclick="openItem('new')">
-            <input type="button" value="Review Information" onclick="openItem('existing')">
+
+            <input type="button" value="Open" onclick="openItem('existing')">
+            <input type="button" value="New" id="new" onclick="openItem('new')">
+            <input type="button" value="Edit" id="new" onclick="openItem('new')">
+            <input type="button" value="Delete" id="new" onclick="openItem('new')">
             <!-- <input type="button" value="Mark As Done"> -->
         </div>
         <div class="table">
@@ -20,7 +22,7 @@ require('../client/index.php');
                 <thead>
                     <tr>
                         <th style="width:10px"><input type="checkbox" onclick="checkAllItems(this)" id="checkAll"></th>
-                        <th style="width: 120px;display:none">Dept Id</th>
+                        <!-- <th style="width: 120px;display:none">Dept Id</th> -->
                         <th style="width: 120px;">Dept Code</th>
                         <th style="width: 200px;">Dept Description</th>
                     </tr>
@@ -66,9 +68,37 @@ require('../client/index.php');
         language: {
             "zeroRecords": " "
         },
+        "ajax": {
+            "url": '../controller/department.php',
+            "type": 'POST',
+            "contentType": "application/json",
+            "data": function() {
+                return JSON.stringify({
+                    xdata: {
+                        title: $('#code').val(),
+                        desc: $('#description').val()
+                    },
+                    action: "get_list"
+                });
+            },
+            "success": (data) => {
+                table.clear()
+                if (data) {
+                    data.forEach(item => {
+                        table.row.add([
+                            `<input type="checkbox" value="${item['dept_id']}" id="checkBoxItem">`,
+                            // `${item['dept_id']}`,
+                            `${item['title']}`,
+                            `${item['desc']}`,
+                        ]).draw(false);
+
+                    });
+                }
+            }
+        }
     });
     $(document).ready(() => {
-        loadTable()
+        // loadTable()
         $('select[name="table_length"]').first().css('font-size', '10px')
         $('select[name="table_length"]').first().css('border', '0px')
 
@@ -97,7 +127,8 @@ require('../client/index.php');
                 })
             })
             const data = await res.json();
-            loadTable()
+            table.DataTable().ajax.reload();
+            // loadTable()
         } else {
             if ($('#code').val() == '') {
                 $('#code').css("border", "1px solid red")

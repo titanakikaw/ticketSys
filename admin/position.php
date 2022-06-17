@@ -92,7 +92,7 @@ require('../client/index.php');
                         $query = "SELECT * from tbo_department";
                         $stmt = $conn->prepare($query);
                         $stmt->execute();
-                        
+
                         while ($data = $stmt->fetch()) {
                             echo "<option value=" . $data['dept_id'] . ">" . $data['title'] . "-" . $data['desc'] . "</option>";
                         }
@@ -110,14 +110,38 @@ require('../client/index.php');
     </div>
 </div>
 <script>
-    console.log('test')
     let table = $('#table').DataTable({
         searching: false,
         paging: true,
         info: false,
-
         language: {
             "zeroRecords": " "
+        },
+        "ajax": {
+            "url": '../controller/employee.php',
+            "type": 'POST',
+            "contentType": "application/json",
+            "data": function() {
+                return JSON.stringify({
+                    xdata: "",
+                    action: "custom_list"
+                });
+            },
+            "success": (data) => {
+                table.clear()
+                if (data) {
+                    data.forEach(item => {
+                        table.row.add([
+                            `<input type="checkbox" value="1" id="checkBoxItem">`,
+                            `${item['posCode']}`,
+                            `${item['posDesc']}`,
+                            `${item['posRank']}`,
+                            `${item['title']}`,
+                        ]).draw(false);
+
+                    });
+                }
+            }
         }
     });
     $(document).ready(() => {
@@ -142,7 +166,8 @@ require('../client/index.php');
         })
         const data = await response.json()
         closemodal();
-        loadTable()
+        table.DataTable().ajax.reload();
+        // loadTable()
     }
 
     async function loadTable() {
@@ -164,7 +189,7 @@ require('../client/index.php');
         });
         // table.draw()
     }
-    loadTable()
+    // loadTable()
 </script>
 
 <?php require('../client/footer.php') ?>

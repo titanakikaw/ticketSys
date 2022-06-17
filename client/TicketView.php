@@ -30,13 +30,10 @@
                 <p class="ptitle">Ticket Files</p>
                 <hr>
                 <div class="files-container" style="display: flex; align-items:center;padding-top:3px;">
-                    <div class="file-container" style="border: 2px solid green; height:45px; width: 35px;border-radius:2px;display:flex;align-items:center; justify-content:center;cursor:pointer;margin:0 2px;">
-                        <i class="fa-solid fa-file" style="color:green"></i>
-                        <!-- <i class="fa-solid fa-file"></i> -->
-                    </div>
-                    <div class="file-container" style="border: 2px dashed grey; height:45px; width: 35px;border-radius:2px;display:flex;align-items:center; justify-content:center;cursor:pointer;margin:0 2px;">
+
+                    <!-- <div class="file-container" style="border: 2px dashed grey; height:45px; width: 35px;border-radius:2px;display:flex;align-items:center; justify-content:center;cursor:pointer;margin:0 2px;">
                         <i class="fa-solid fa-plus" style="color:grey"></i>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>
@@ -139,7 +136,6 @@
             })
         })
         const data = await response.json();
-        console.log(data)
         if (data != '') {
             data['comments'].forEach(comment => {
                 $newComm = "";
@@ -160,7 +156,9 @@
                             </div>`
                 $('.tcoms-container').append($newComm)
             });
+
             let info = data['ticketInfo'][0]
+
             $('#tick_no').text(`${info['ticket_no']}`)
             $('#author').text(`${info['lname']}, ${info['fname']}`)
             $('#dept').text(`${info['desc']}`)
@@ -168,6 +166,12 @@
             $('#status').text(`${info['status']}`)
             $('#subject').text(`${info['subject']}`)
             $('#details').val(`${info['details']}`)
+            $('.files-container').append(`  <a href="${info['file']}" style="display:block;"><div class="file-container" style="border: 2px solid green; height:45px; width: 35px;      border-radius:2px;display:flex;align-items:center; justify-content:center;cursor:pointer;margin:0 2px;">
+                        <i class="fa-solid fa-file" style="color:green"></i>
+                       
+                    </div>
+                    <p>${info['file'].replace("../FILES/", '').substring(0, 10)}...</p>
+                  </a>`)
         }
 
     }

@@ -13,7 +13,7 @@ switch ($_POST['method']) {
         $_POST['params']['date'] = date('d/m/Y');
         $_POST['params']['status'] = "Pending";
         $_POST['params']['emp_id'] = $_POST['currentUser'];
-        if($_POST['file']){
+        if ($_POST['file']) {
             $_POST['params']['file'] = "../FILES/" . $_POST['file'];
         }
         $clsController = new clsController($_POST['params'], 'tbo_ticket');
@@ -24,41 +24,42 @@ switch ($_POST['method']) {
         if ($TYPE == "department") {
             $clsController = new clsController("", "tbo_ticket");
             $ticketData = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ["dept_id", 'emp_id'], true, ["tbo_department.dept_id"], $_POST['find']);
-           
+
             // die();
             // echo json_encode($ticketData);
         } else if ($TYPE == "mytickets") {
             $clsController = new clsController("", "tbo_ticket_assigned ");
             $ticketData = $clsController->viewlist3(true, ['tbo_ticket', 'tbo_employee'], ["ticket_id", 'emp_id'], true, ["tbo_ticket.ticket_id", "tbo_employee.emp_id"], $_POST['find']);
-            // foreach ($ticketData as $key => $value) {           
-                //     $assigned['stat'] = getAssigned($value['ticket_id']);
-                //     if (!$assigned['stat'] ) {
-                //         $assigned['assigned'] = "Unassigned";
-                //     }else{
-                //         $assigned['assigned'] = $assigned['stat']['assigned'];
-                //     }
-                //     array_push($ticketData[$key], $assigned['assigned']);
-                // };
-                // // die();
-                // echo json_encode($ticketData);
-            // echo json_encode($clsController->viewlist3(true, ['tbo_ticket', 'tbo_employee'], ["ticket_id", 'emp_id'], true, ["tbo_ticket.ticket_id", "tbo_employee.emp_id"], $_POST['find']));
         } elseif ($TYPE == "createdTicket") {
         }
         foreach ($ticketData as $key => $value) {
             $assigned['stat'] = getAssigned($value['ticket_id']);
-            if (!$assigned['stat'] ) {
+            if (!$assigned['stat']) {
                 $assigned['assigned'] = "Unassigned";
-            }else{
+            } else {
                 $assigned['assigned'] = $assigned['stat']['assigned'];
             }
             array_push($ticketData[$key], $assigned['assigned']);
         };
         echo json_encode($ticketData);
         break;
-    case 'update':
-        break;
     case 'delete':
+        $IDS = $_POST['xdata'];
+        $clsController = new clsController($IDS, 'tbo_ticket');
+        foreach ($IDS as $key => $value) {
+            $clsController->delete("tbo_ticket", $value);
+        }
+
         break;
+    case 'update':
+        $IDS = $_POST['xdata'];
+        $data['status'] = "Done";
+        $clsController = new clsController($data, 'tbo_ticket');
+        foreach ($IDS as $key => $value) {
+            $clsController->update($value, "ticket_id");
+        }
+        break;
+
     case 'deptTicket':
         departmentTicket("IT");
         break;
@@ -82,4 +83,3 @@ switch ($_POST['method']) {
     default:
         break;
 }
-

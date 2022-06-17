@@ -69,11 +69,18 @@ function checkSelected(items) {
         if (item.checked == true) {
             checkedItem.count += 1;
             checkedItem.item = item.value;
-            // console.log(item.value)
-
         }
     });
     return checkedItem
+}
+function selectedItems(items) {
+    let selectedItems = [];
+    items.forEach(item => {
+        if (item.checked) {
+            selectedItems.push(item.value)
+        }
+    });
+    return selectedItems
 }
 
 function openItem(type) {

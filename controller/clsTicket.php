@@ -42,17 +42,8 @@ function getAssigned($ticketno)
     $stmt = $conn->prepare($query);
     $stmt->execute([$ticketno]);
     $data = $stmt->fetch();
-    // die();
-    // if (!$data) {
-    //     $data['assigned'] == "Unassigned";
-    // }
     return $data;
 }
-function saveImage()
-{
-}
-// var_dump(count($_FILES));
-// die();
 if (count($_FILES) > 0) {
     $target_folder = "../FILES/";
     $target_file  = $target_folder . basename($_FILES['files']["name"]);

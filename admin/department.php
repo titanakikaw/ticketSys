@@ -10,9 +10,10 @@ require('../client/index.php');
     </div>
     <div class="table-container">
         <div class="table-actions">
-            <input type="button" value="Open" onclick="openItem('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
-            <input type="button" value="Mark As Done">
+           
+            <input type="button" value="New Department" id="new" onclick="openItem('new')">
+            <input type="button" value="Review Information" onclick="openItem('existing')">
+            <!-- <input type="button" value="Mark As Done"> -->
         </div>
         <div class="table">
             <table id="table">
@@ -33,7 +34,7 @@ require('../client/index.php');
     <div class="modal-bg">
         <div class="item-modal" id="openItem">
             <div class="itm-modal-header">
-                <h3>Employee Information</h3>
+                <h3>Department Information</h3>
             </div>
             <div class="itm-modal-body">
                 <div class="form-input">
@@ -44,10 +45,10 @@ require('../client/index.php');
                     <p>Position Description</p>
                     <input type="text" id="description">
                 </div>
-                <div class="form-input">
+                <!-- <div class="form-input">
                     <p>Rank</p>
                     <input type="number" id="description">
-                </div>
+                </div> -->
             </div>
             <div class="itm-modal-action">
                 <input type="button" value="Save" style="background-color: green;" onclick="save()">

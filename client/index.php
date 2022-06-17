@@ -1,6 +1,16 @@
 <link rel="stylesheet" href="../output.css?<?php echo time(); ?>">
 <?php
-ini_set('display_errors', 0);
+// session_start();
+// if (!isset($_SESSION['current_id']) && !isset($_SESSION['current_name']) && !isset($_SESSION['postion'])) {
+//     header("Location: ../index.php");
+// }
+// // var_dump($_POST);
+// if (isset($_POST['method'])  == 'logout') {
+//     session_unset();
+//     session_destroy();
+//     header("Location: ../index.php");
+// }
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 session_start();
 if (!isset($_SESSION['current_id']) && !isset($_SESSION['current_name']) && !isset($_SESSION['postion'])) {

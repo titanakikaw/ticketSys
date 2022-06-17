@@ -33,9 +33,8 @@ require('../client/index.php');
     </div>
     <div class="table-container">
         <div class="table-actions">
-            <input type="button" value="Open" onclick="openItem('existing')">
-            <input type="button" value="New Ticket" id="new" onclick="openItem('new')">
-            <input type="button" value="Mark As Done">
+            <input type="button" value="New" id="new" onclick="openItem('new')">
+            <input type="button" value="View" onclick="openItem('existing')">
         </div>
         <div class="table">
             <table id="table">
@@ -86,23 +85,33 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="margin:5px">
                         <p>Lastname</p>
-                        <input type="text" id="code">
+                        <input type="text" id="code" name="lname">
                     </div>
                     <div class="form-input" style="margin:5px">
                         <p>Firstname</p>
-                        <input type="text" id="description">
+                        <input type="text" id="description" name="fname">
                     </div>
                 </div>
                 <div class="" style="display:flex;">
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Department:</p>
-                        <select style="width: 100%;">
-                            <option></option>
+                        <select style="width: 100%;" id="department" onchange="handleDeptChange()" name="dept_id">
+                        <option></option>
+                            <?php
+                                $clsConnection = new dbConnection(); 
+                                $conn = $clsConnection->conn();
+                                $query = "SELECT * from tbo_department";
+                                $stmt = $conn->prepare($query);
+                                $stmt->execute();
+                                while($data = $stmt->fetch()){
+                                    echo '<option value='.$data['dept_id'].'>'.$data['title'].'-'.$data['desc'].'</option>';
+                                }
+                            ?>
                         </select>
                     </div>
                     <div class="form-input" style="width: 45%;margin:5px">
                         <p>Position:</p>
-                        <select style="width: 100%;">
+                        <select style="width: 100%;" id="positions" name="pos_id">
                             <option></option>
                         </select>
                     </div>
@@ -111,17 +120,17 @@ require('../client/index.php');
                 <div class="" style="display:flex;">
                     <div class="form-input" style="width: 45%;margin:5px">
                         <p>Username:</p>
-                        <input type="text" name="[txt][username]">
+                        <input type="text" name="username">
                     </div>
                     <div class="form-input" style="flex-grow: 1;margin:5px">
                         <p>Password:</p>
-                        <input type="password" name="[txt][password]">
+                        <input type="password" name="pass">
                     </div>
                 </div>
 
             </div>
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;">
+                <input type="button" value="Submit" style="background-color: green;" onclick="save()">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
         </div>
@@ -135,6 +144,54 @@ require('../client/index.php');
         language: {
             "zeroRecords": " "
         },
+        "ajax" : {
+            "url" : '../controller/employee.php',
+            "type" : 'POST',
+            "contentType": "application/json",
+            "data": function ( ) {
+                return JSON.stringify({
+                     action : 'table',
+                    xdata : {
+                        table : true
+                    }}
+                );
+            },
+
+            "success" : (data) => {
+                table.clear()
+                if(data){
+                    data.forEach(emp => {
+                        let ranking = emp['posRank'];
+                        let rank = ''
+                        switch(ranking){
+                            case '1': 
+                                rank = 'JR'
+                                break;
+                            case '2': 
+                                rank = 'MID'
+                                break;
+                            case '3':
+                                rank = "SR"
+                                break;
+                            default: 
+                                rank = "Undefined"
+                                break;
+                        }
+                        table.row.add( [
+                            `<input type="checkbox" value="1" id="checkBoxItem">`,
+                            `${emp['emp_id']}`,
+                            `${emp['lname']}, ${emp['fname']}`,
+                            `${emp['posDesc']}`,
+                            `${rank}`,
+                            `${emp['desc']}`,
+                            `${emp['username']}`,
+                            `${emp['pass']}`
+                        ] ).draw( false );
+
+                    }); 
+                }
+            }
+        }
     });
     $(document).ready(() => {
 
@@ -148,13 +205,97 @@ require('../client/index.php');
     })
 
 
-    function save() {
-        var children = $('.form-input').children()
-        children.map((index, child) => {
-            if (child.tagName.toUpperCase() != "P") {
-                child.setAttribute("disabled", "")
-            }
+    async function save() {
+        // console.log(FormJsonData('.itm-modal-body'));
+       
+        const response = await fetch("../controller/employee.php", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                xdata: FormJsonData('.itm-modal-body'),
+                action: "new"
+            })
         })
+        const data = await response.json();
+        $('#table').DataTable().ajax.reload();
+        closemodal();
+    }
+
+    async function handleDeptChange(){
+        $('#positions').empty()
+        $('#positions').append(`<option></option>`);
+        const response = await fetch ("../controller/employee.php", {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({
+                action : "get_position",
+                xdata : {
+                    dept_id : `${$('#department').val()}`
+                }
+            })
+        })
+        const data = await response.json()
+        data.forEach(item => {
+            $('#positions').append(`<option value=${item['pos_id']}>${item['posCode']} - ${item['posDesc']}</option>`)
+        });
+    }
+
+    async function loadTable() {
+        table.clear()
+        const response = await fetch("../controller/employee.php", {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({
+                action : 'table',
+                xdata : {
+                    table : true
+                }
+            })
+        })
+        const data = await response.json()
+        if(data){
+            data.forEach(emp => {
+                let ranking = emp['posRank'];
+                let rank = ''
+                switch(ranking){
+                    case '1': 
+                        rank = 'JR'
+                        break;
+                    case '2': 
+                        rank = 'MID'
+                        break;
+                    case '3':
+                        rank = "SR"
+                        break;
+                    default: 
+                        rank = "Undefined"
+                        break;
+                }
+                table.row.add( [
+                    `<input type="checkbox" value="1" id="checkBoxItem">`,
+                    `${emp['emp_id']}`,
+                    `${emp['lname']}, ${emp['fname']}`,
+                    `${emp['posDesc']}`,
+                    `${rank}`,
+                    `${emp['desc']}`,
+                    `${emp['username']}`,
+                    `${emp['pass']}`
+                ] ).draw( false );
+
+            }); 
+        }
+    }
+    // loadTable() 
+
+
+    function convDate(){
+
     }
 </script>
 

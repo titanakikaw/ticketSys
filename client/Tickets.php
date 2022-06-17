@@ -1,5 +1,17 @@
 <?php require('./index.php');
-// die();
+
+switch ($_GET['ticket']) {
+    case 'department':
+        $find = $_SESSION['dept_code'];
+        break;
+    case 'mytickets':
+        $find = $_SESSION['current_id'];
+        break;
+    default:
+        # code...
+        break;
+}
+
 ?>
 <div class="main-tickets">
     <div class="search-filter">
@@ -119,7 +131,7 @@
                 <!-- </form> -->
             </div>
             <div class="itm-modal-action">
-                <input type="button" value="Submit" style="background-color: green;">
+                <input type="button" value="Submit" style="background-color: green;" onclick="save()">
                 <input type="button" value="Cancel" id="modalClose">
             </div>
         </div>
@@ -127,13 +139,49 @@
 </div>
 <?php require('./footer.php') ?>
 <script>
+    let lookup = '<?php echo $_GET['ticket'];?>';
+    
     let table = $('#mt-table').DataTable({
         searching: false,
         paging: true,
         info: false,
-        ordering: false,
+        // ordering: false,
         language: {
             "zeroRecords": " "
+        },
+        "ajax" : {
+            "url" : '../controller/ticket.php',
+            "type" : 'POST',
+            "contentType": "application/json",
+            "data": function ( ) {
+                return JSON.stringify({
+                    method: 'table',
+                    type: lookup,
+                    find: [`<?php echo $find ?>`]
+                    // find: ['1']
+                });
+                
+            },
+
+            "success" : (data) => {
+                table.clear()
+                if(data){
+                    data.forEach(ticket => {
+                        console.log(ticket)
+                        table.row.add( [
+                            `<input type="checkbox"  value="${ticket['ticket_id']}" id="checkBoxItem">`,
+                            `${ticket['status']}`,
+                            `${ticket['ticket_no']}`,
+                            `${ticket['subject']}`,
+                            `${ticket['date']}`,
+                            `${ticket['lname']}, ${ticket['fname']}`,
+                            `${ticket['file'] ? 'YES' : 'NONE'}`,
+                            `${ticket['20'] ? ticket['20'] : 'Unassigned'}`
+                        ] ).draw( false );
+
+                    }); 
+                }
+            }
         }
     });
     $(document).ready(() => {
@@ -155,47 +203,47 @@
         // tableLoad()
     })
 
-    async function tableLoad() {
+    // async function tableLoad() {
 
-        $('#mt-table-body').empty();
-        const response = await fetch('../controller/ticket.php', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                method: 'table',
-                type: 'deptTickets',
-                find: ['9']
-            })
-        })
-        let dataArray = await response.json();
-        dataArray.forEach(ticket => {
-            console.log(ticket)
-            let ticketElement = '<tr data-ticket-id="2">';
-            ticketElement += `<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="${ticket['ticket_id']}" id="checkBoxItem"></td>`;
-            ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
-            ticketElement += `<td>${ticket['ticket_no']} </td>`;
-            ticketElement += `<td>${ticket['subject']}</td>`;
-            ticketElement += `<td>${ticket['date']}</td>`;
-            ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
-            ticketElement += `<td>${ticket['file'] ? 'YES' : 'NONE'}</td>`;
-            ticketElement += `<td>${ticket['20'] ? ticket['20'] : 'Unassigned'} </td>`;
-            ticketElement += '<tr>';
-            $('#mt-table-body').append(ticketElement)
-        });
+        //     $('#mt-table-body').empty();
+        //     const response = await fetch('../controller/ticket.php', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-type': 'application/json'
+        //         },
+        //         body: JSON.stringify({
+        //             method: 'table',
+        //             type: 'deptTickets',
+        //             find: ['2']
+        //         })
+        //     })
+        //     let dataArray = await response.json();
+        //     dataArray.forEach(ticket => {
+        //         console.log(ticket)
+        //         let ticketElement = '<tr data-ticket-id="2">';
+        //         ticketElement += `<td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="${ticket['ticket_id']}" id="checkBoxItem"></td>`;
+        //         ticketElement += `<td style = "font-weight:bold;">${ticket['status']}</td>`;
+        //         ticketElement += `<td>${ticket['ticket_no']} </td>`;
+        //         ticketElement += `<td>${ticket['subject']}</td>`;
+        //         ticketElement += `<td>${ticket['date']}</td>`;
+        //         ticketElement += `<td> ${ticket['lname']}, ${ticket['fname']}</td>`;
+        //         ticketElement += `<td>${ticket['file'] ? 'YES' : 'NONE'}</td>`;
+        //         ticketElement += `<td>${ticket['20'] ? ticket['20'] : 'Unassigned'} </td>`;
+        //         ticketElement += '<tr>';
+        //         $('#mt-table-body').append(ticketElement)
+        //     });
 
-        // $('#mt-table').DataTable({
-        //     searching: false,
-        //     paging: true,
-        //     info: false,
-        //     ordering: false,
-        //     language: {
-        //         "zeroRecords": " "
-        //     }
-        // });
+        //     // $('#mt-table').DataTable({
+        //     //     searching: false,
+        //     //     paging: true,
+        //     //     info: false,
+        //     //     ordering: false,
+        //     //     language: {
+        //     //         "zeroRecords": " "
+        //     //     }
+        //     // });
 
-    }
+    // }
 
     function open_custom_Item(type) {
 
@@ -283,7 +331,7 @@
             params: FormJsonData('.itm-modal-body'),
             file: $('#files')[0].files[0].name,
             method: 'new',
-            currentUser: ""
+            currentUser: "<?php echo $_SESSION['current_id'] ?>"
         };
         const response = await fetch('../controller/ticket.php', {
             method: 'POST',
@@ -295,7 +343,8 @@
         let status = await response.json()
         if (status) {
             closemodal()
-            tableLoad()
+            $('#mt-table').DataTable().ajax.reload();
+             // tableLoad()
 
         } else {
             alert("Failed to create ticket. Please try again.")
@@ -312,10 +361,7 @@
             body: formData
         })
         const data = await response.json()
-        if (!data) {
-
-            // break;
-        }
+        console.log(data)
     }
 
     async function getCategory() {
@@ -350,5 +396,5 @@
             $('#new-select-user-mt').append(`<option value=${element['emp_id']}>${element['lname']}, ${element['fname']}</option>`)
         })
     }
-    tableLoad()
+    // tableLoad()
 </script>

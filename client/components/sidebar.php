@@ -14,9 +14,9 @@
                 <P style="font-size: 12px;font-weight:500;margin-left:10px;">TASKS</P>
             </div>
             <ul>
-                <li><a href="../client/Tickets.php">DEPARTMENT TICKETS</a></li>
-                <li><a href="../client/Tickets.php">MY TICKETS</a></li>
-                <li><a href="../client/Tickets.php">SENT TICKETS</a></li>
+                <li><a href="../client/Tickets.php?ticket=department">DEPARTMENT TICKETS</a></li>
+                <li><a href="../client/Tickets.php?ticket=mytickets">MY TICKETS</a></li>
+                <li><a href="../client/Tickets.php?ticket=senttickets">SENT TICKETS</a></li>
 
             </ul>
         </li>

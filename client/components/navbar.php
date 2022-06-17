@@ -1,6 +1,6 @@
 <div class="navbar" style="position: fixed;">
     <div class="navlogo">
-        <h3>PRACTICE | TMS</h3>
+        <h3>DRISM | TMS</h3>
     </div>
     <div class="nav-items">
         <div class="nav-item">

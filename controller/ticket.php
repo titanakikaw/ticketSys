@@ -30,7 +30,9 @@ switch ($_POST['method']) {
         } else if ($TYPE == "mytickets") {
             $clsController = new clsController("", "tbo_ticket_assigned ");
             $ticketData = $clsController->viewlist3(true, ['tbo_ticket', 'tbo_employee'], ["ticket_id", 'emp_id'], true, ["tbo_ticket.ticket_id", "tbo_employee.emp_id"], $_POST['find']);
-        } elseif ($TYPE == "createdTicket") {
+        } elseif ($TYPE == "senttickets") {
+            $clsController = new clsController("", "tbo_ticket");
+            $ticketData = $clsController->viewlist3(true, ['tbo_department', 'tbo_employee'], ["dept_id", 'emp_id'], true,["tbo_ticket.emp_id"], $_POST['find']);
         }
         foreach ($ticketData as $key => $value) {
             $assigned['stat'] = getAssigned($value['ticket_id']);
@@ -45,9 +47,9 @@ switch ($_POST['method']) {
         break;
     case 'delete':
         $IDS = $_POST['xdata'];
-        $clsController = new clsController($IDS, 'tbo_ticket');
         foreach ($IDS as $key => $value) {
-            $clsController->delete("tbo_ticket", $value);
+            $clsController = new clsController($IDS, 'tbo_ticket');
+            $clsController->delete("ticket_id", $value);
         }
 
         break;

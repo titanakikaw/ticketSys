@@ -127,7 +127,7 @@ require('../client/index.php');
                 })
             })
             const data = await res.json();
-            table.DataTable().ajax.reload();
+            $('#table').DataTable().ajax.reload();
             // loadTable()
         } else {
             if ($('#code').val() == '') {

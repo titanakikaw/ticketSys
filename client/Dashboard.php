@@ -21,7 +21,7 @@ require('./index.php');
     <div class="d-notification-container">
         <div class="ticket-notification">
             <h5>LATEST TICKET NOTIFICATIONS</h5>
-            <hr>
+            <!-- <hr> -->
             <table class="ticket-notif-table">
                 <tr>
                     <th>Ticket no.</th>

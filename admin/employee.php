@@ -242,7 +242,23 @@ require('../client/index.php');
         })
         const data = await response.json()
         data.forEach(item => {
-            $('#positions').append(`<option value=${item['pos_id']}>${item['posCode']} - ${item['posDesc']}</option>`)
+            let ranking = item['posRank'];
+            let rank = ''
+            switch (ranking) {
+                case '1':
+                    rank = 'JR'
+                    break;
+                case '2':
+                    rank = 'MID'
+                    break;
+                case '3':
+                    rank = "SR"
+                    break;
+                default:
+                    rank = "Undefined"
+                    break;
+            }
+            $('#positions').append(`<option value=${item['pos_id']}>${item['posDesc']} - ${rank}</option>`)
         });
     }
 

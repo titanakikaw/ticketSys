@@ -1,10 +1,20 @@
 <?php require('./index.php');
 
+$disable = '';
+$display = "";
+
 switch ($_GET['ticket']) {
     case 'department':
         $find = $_SESSION['dept_code'];
+        $disable = "disabled ";
         break;
     case 'mytickets':
+        $find = $_SESSION['current_id'];
+        $disable = "disabled";
+        $display = 'style="display:none;"';
+        break;
+
+    case 'senttickets':
         $find = $_SESSION['current_id'];
         break;
     default:
@@ -46,9 +56,18 @@ switch ($_GET['ticket']) {
         <div class="mt-table-actions">
             <input type="button" value="Open" onclick="open_custom_Item('existing')">
             <input type="button" value="New" id="new" onclick="openItem('new')">
-            <input type="button" value="Delete" onclick="deleteItem()">
-            <input type="button" value="Mark As Done" onclick="markasdone()">
-            <input type="button" value="Assign Ticket" onclick="">
+            <?php
+            
+            ?>
+            <input type="button" value="Cancel Ticket" onclick="deleteItem()" <?php echo  $disable?>>
+            <input type="button" value="Mark As Done" onclick="markasdone()" <?php echo  $disable?>>
+            <?php 
+                if($_SESSION['rank'] == '3'){
+                    echo '<input type="button" id="assignBtn" value="Assign Ticket" onclick="" '. $display.'>';
+                }
+            ?>
+            
+            
         </div>
         <div class="mt-table">
             <table id="mt-table">
@@ -65,16 +84,7 @@ switch ($_GET['ticket']) {
                     </tr>
                 </thead>
                 <tbody id="mt-table-body">
-                    <!-- <tr data-ticket-id="1" onclick="">
-                        <td style="border-left: 2px solid red;width:10px"><input type="checkbox" value="1" id="checkBoxItem"></td>
-                        <td style="font-weight:bold;">Pending</td>
-                        <td>000013</td>
-                        <td>Sample Subject / Title to Fix</td>
-                        <td>Fri, 13 May 2022</td>
-                        <td>ITD - Juan Dela Cruz</td>
-                        <td>EVER - HEAD OFFICE </td>
-                        <td>EVER - HEAD OFFICE </td>
-                    </tr> -->
+
                 </tbody>
 
             </table>
@@ -140,6 +150,12 @@ switch ($_GET['ticket']) {
             </div>
         </div>
     </div>
+    
+
+    <div class="assign-ticket" style=" padding: 1rem;background-color:white; box-shadow: 0px 0px 7px 1px rgba(0,0,0,0.13);">
+        Assign Ticket
+    </div>
+
 </div>
 <?php require('./footer.php') ?>
 <script>
@@ -188,6 +204,22 @@ switch ($_GET['ticket']) {
         }
     });
     $(document).ready(() => {
+        $('.assign-ticket').dialog({ 
+            // autoOpen: false,   
+            open : function(e){
+                console.log($(e.target).parent())
+                $(e.target).parent().css("position" , "absolute")
+                $(e.target).parent().css("top" , "20%")
+                $(e.target).parent().css("left" , "35%")
+                $('.ui-button').css("display", "none")
+            },
+            // title: "test",
+            autoOpen: true,
+            height: 450,
+            width: 650,
+            // modal : false
+        })
+      
         $("#ticketDatePicker").datepicker({
             dateFormat: "yy-mm-dd"
         });
@@ -203,12 +235,16 @@ switch ($_GET['ticket']) {
             $('.modal-bg').css("display", "none")
         })
 
+        $('#assignBtn').click(() => {
+            $('.assign-ticket').dialog("open")
+        })
+
         // tableLoad()
     })
 
     async function deleteItem() {
         let items = document.querySelectorAll('#checkBoxItem')
-        selectedItems(items)
+        console.log(selectedItems(items))
         const response = await fetch("../controller/ticket.php", {
             method: 'POST',
             headers: {

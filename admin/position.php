@@ -165,8 +165,10 @@ require('../client/index.php');
             })
         })
         const data = await response.json()
+        // table.DataTable().ajax.reload();
+        $('#table').DataTable().ajax.reload();
         closemodal();
-        table.DataTable().ajax.reload();
+     
         // loadTable()
     }
 

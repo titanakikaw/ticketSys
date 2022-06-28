@@ -130,8 +130,7 @@ class clsController
             $query = "DELETE from `$this->table` where $column=?";
             $stmt = $conn->prepare($query);
             $stmt->execute([$value]);
-            // var_dump([$value]);
-            // die();
+            
             return true;
         } catch (\Throwable $th) {
             var_dump($th);
@@ -191,6 +190,8 @@ class clsController
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $query = "SELECT * from $this->table $condition $where_condition";
             $stmt = $conn->prepare($query);
+            // var_dump($find);
+            // die();
             $stmt->execute($find);
             $data = $stmt->fetchAll();
             return $data;

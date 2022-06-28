@@ -21,19 +21,8 @@
             </ul>
         </li>
 
-        <!-- <li>
-            <div class="" style="display: flex;">
-
-                <i class="fa-solid fa-calendar-days"></i>
-                <P style="font-size: 12px;font-weight:500;margin-left:10px;">ATTENDANCE</P>
-            </div>
-            <ul>
-                <li><a href="../client/Attendance.php">ATTENDANCE</a></li>
-                <li><a href="../client/Request.php">MY REQUESTS</a></li>
-            </ul>
-        </li> -->
-
-        <!-- <li>
+        
+        <li>
             <div class="" style="display: flex;align-items:center">
                 <i class="fa-solid fa-code-pull-request"></i>
                 <P style="font-size: 12px;font-weight:500;margin-left:10px;color:white">ADMIN</P>
@@ -43,7 +32,7 @@
                 <li><a href="../admin/position.php">DESIGNATIONS</a></li>
                 <li><a href="../admin/department.php">DEPARTMENT</a></li>
             </ul>
-        </li> -->
+        </li>
 
     </ul>
 </div>

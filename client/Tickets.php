@@ -140,7 +140,7 @@ switch ($_GET['ticket']) {
 
                 <div class="form-input">
                     <p>Details :</p>
-                    <textarea style="" name="details"></textarea>
+                    <textarea name="details"></textarea>
                 </div>
                 <!-- </form> -->
             </div>
